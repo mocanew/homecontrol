@@ -1,0 +1,16 @@
+{
+  "name": "radio-pi-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Valentin Mocanu <mr_vali@yahoo.ro> (http://rontavstudio.com)",
+  "license": "MIT",
+  "dependencies": {
+    "lirc_node": "0.0.4",
+    "rpi-gpio": "^0.7.0",
+    "socket.io": "^1.4.5"
+  }
+}

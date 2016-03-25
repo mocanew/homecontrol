@@ -1,0 +1,30 @@
+[
+    {
+        "stream": "http://stream2.srr.ro:8002/",
+        "name": "Radio Romania Actualitati"
+    },
+    {
+        "stream": "http://stream2.srr.ro:8012/",
+        "name": "Romania Cultural"
+    },
+    {
+        "stream": "http://stream2.srr.ro:8042/",
+        "name": "Antena Satelor"
+    },
+    {
+        "stream": "http://80.86.106.136:80/",
+        "name": "Kiss FM"
+    },
+    {
+        "stream": "http://radiolive.trm.md:8000/RM-tineret-256",
+        "name": "RM-tineret"
+    },
+    {
+        "stream": "http://radiolive.trm.md:8000/RM-muzical-256",
+        "name": "RM-muzical"
+    },
+    {
+        "stream": "http://live.noroc.tv:8000/radionoroc.aacp",
+        "name": "Radio Noroc"
+    }
+]

@@ -1,0 +1,35 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": "plugin:react/recommended",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "indent": [0, 4],
+        "linebreak-style": [2, "windows"],
+        "quotes": [2, "single"],
+        "semi": [2, "always"],
+        "brace-style": [2, "stroustrup"],
+        "no-lonely-if": 2,
+        "no-console": 0,
+        "space-before-function-paren": 2,
+        "space-before-blocks": 2,
+        "keyword-spacing": 2,
+        "semi-spacing": 2,
+        "arrow-spacing": 2
+    },
+    "globals": {
+        "io": true
+    }
+}
