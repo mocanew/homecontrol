@@ -1,5 +1,4 @@
 const speakerPin = 11;
-const async = require('async');
 const gpio = require('rpi-gpio');
 const fs = require('fs');
 const lirc = require('lirc_node');
@@ -13,8 +12,6 @@ const player = new MPlayer();
 const dir = '/home/radiopi';
 
 const tvRemote = true;
-
-var pinState = {};
 
 gpio.setup(speakerPin, gpio.DIR_OUT, () => {
     var stations = JSON.parse(fs.readFileSync(dir + '/radioStations.json'));
@@ -49,7 +46,6 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
         }
         stations = temp;
         log.info(Date.now(), 'RadioStations updated');
-        showStationsNames();
     });
 
     if (tvRemote) {
@@ -79,7 +75,7 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
                     startRadio(previousStation());
                     break;
             }
-        }, 200);
+        }, 500);
     }
 
     var io = new Server();
@@ -104,8 +100,8 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
     function updateGPIO (pin, state, callback) {
         if (typeof callback != 'function') callback = function () {};
 
-        if (pinState[pin] === state) return callback();
-        pinState[pin] = state;
+        //        if (pinState[pin] === state) return callback();
+        //        pinState[pin] = state;
 
         gpio.write(pin, state, callback);
     }
@@ -167,20 +163,6 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
         player.volume(state.volume);
     }
 
-    function changeChannel (stationID) {
-        if (stationID === undefined || !stations[stationID]) return;
-
-        startRadio(stations[stationID]);
-    }
-
     updateGPIO(speakerPin, false);
     log.info(Date.now(), 'Startup completed');
 });
-
-function cleanup () {
-    gpio.destroy();
-}
-
-//process.on('exit', cleanup);
-//process.on('SIGINT', cleanup);
-//process.on('uncaughtException', cleanup);
