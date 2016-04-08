@@ -75,12 +75,6 @@ socket.on('check', (e) => {
     ], (err, result) => {
         if (err || !result) return log.error(err);
 
-        log.debug('Check', {
-            type: 'check',
-            mac: e.mac,
-            ip: result.ip,
-            isAlive: result.alive
-        });
         socket.emit('WakeOnLan:response', {
             type: 'check',
             mac: e.mac,
