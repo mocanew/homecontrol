@@ -34,20 +34,17 @@ class RadioPi extends React.Component {
         socket.emit('Radio:next');
     }
     stationsUpdate (e) {
-        console.log(e);
         this.setState({
             stations: e
         });
     }
     stateUpdate (e) {
-        console.log(e);
         this.setState({
             state: e,
             play: e.playing
         });
     }
     stationClick (e) {
-        console.log(e);
         socket.emit('Radio:start', {
             stream: e
         });
