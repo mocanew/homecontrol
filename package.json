@@ -4,7 +4,16 @@
   "description": "",
   "main": "homeControl.js",
   "scripts": {
-    "start": "node homeControl.js"
+    "start": "npm-run-all --parallel wakeonlan radiopi homecontrol",
+    "dev": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol",
+    "wakeonlan": "node WakeOnLan/index.js",
+    "radiopi": "node RadioPi/index.js",
+    "homecontrol": "node homeControl.js",
+    "lint": "eslint RadioPi/*.js WakeOnLan/*.js www/**/*.js www/**/*.jsx",
+    "webpackDevServer": "webpack-dev-server --colors",
+    "watch:homecontrol": "nodemon --quiet --watch homeControl.js -x \"npm run homecontrol\"",
+    "watch:wakeonlan": "nodemon --quiet --watch WakeOnLan/ -x \"npm run wakeonlan\"",
+    "watch:radiopi": "nodemon --quiet --watch RadioPi/ -x \"npm run radiopi\""
   },
   "author": "Valentin Mocanu <mr_vali@yahoo.ro> (http://rontavstudio.com)",
   "license": "ISC",
@@ -32,9 +41,18 @@
     "express": "^4.13.4",
     "jsx-loader": "^0.13.2",
     "minilog": "^3.0.0",
-    "react": "^0.14.6",
+    "react": "^15.0.0",
     "react-router": "^2.0.1",
     "socket.io": "^1.4.5",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "arpscan": "^0.1.0",
+    "ping": "^0.1.10",
+    "socket.io-client": "^1.4.5",
+    "wake_on_lan": "0.0.4",
+    "lirc_node": "0.0.4",
+    "mplayer": "^2.0.1"
+  },
+  "optionalDependencies": {
+    "rpi-gpio": "^0.7.0"
   }
 }
