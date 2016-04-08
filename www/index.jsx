@@ -33,6 +33,9 @@ class App extends React.Component {
         });
     }
     componentWillUpdate (newProps, newState) {
+        if (newProps.location.pathname != this.props.location.pathname) {
+            newState.menu = false;
+        }
         this.refs.header.setState({
             menu: newState.menu
         });
@@ -59,7 +62,8 @@ class App extends React.Component {
     }
 }
 App.propTypes = {
-    children: React.PropTypes.node
+    children: React.PropTypes.node,
+    location: React.PropTypes.object
 };
 
 ReactDOM.render(
