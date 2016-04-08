@@ -12,7 +12,11 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', express.static(dir + '/www/RadioApp'));
+app.use('/', express.static(dir + '/www'));
+
+app.get('*', function (req, res) {
+    res.redirect('/');
+});
 
 var server = app.listen(80, function () {
     var host = server.address().address;
@@ -96,6 +100,14 @@ io.on('connection', function (socket) {
     socket.on('Radio:stop', () => messageToServer({
         server: 'Radio',
         name: 'Radio:stop'
+    }));
+    socket.on('Radio:prev', () => messageToServer({
+        server: 'Radio',
+        name: 'Radio:prev'
+    }));
+    socket.on('Radio:next', () => messageToServer({
+        server: 'Radio',
+        name: 'Radio:next'
     }));
     socket.on('Radio:toggle', (e) => messageToServer({
         server: 'Radio',
