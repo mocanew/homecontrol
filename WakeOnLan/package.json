@@ -1,0 +1,19 @@
+{
+  "name": "wakeonlan",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Valentin Mocanu <mr_vali@yahoo.ro> (http://rontavstudio.com)",
+  "license": "ISC",
+  "dependencies": {
+    "arpscan": "^0.1.0",
+    "async": "^2.0.0-rc.2",
+    "minilog": "^3.0.0",
+    "ping": "^0.1.10",
+    "socket.io-client": "^1.4.5",
+    "wake_on_lan": "0.0.4"
+  }
+}
