@@ -1,0 +1,59 @@
+@import 'roboto';
+@import 'variables';
+
+html {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+body {
+    width: 100%;
+    height: 100%;
+    padding: 65px 0 0;
+    margin: 0;
+}
+#app {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: Roboto, Arial;
+
+    > div,
+    > div > div {
+        height: 100%;
+    }
+}
+main {
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.floatingButtonWrapper {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 1100;
+    padding: 0;
+    cursor: pointer;
+    transition: width 0.5s;
+
+    .materialBtn {
+        padding: 15px;
+        background: $main-500;
+        border-radius: 50%;
+    }
+    span > span {
+        background: $white;
+    }
+    .drop {
+        background: rgba($white, 0.2);
+
+        &.animate {
+            background: rgba($white, 0.5);
+        }
+    }
+}

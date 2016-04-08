@@ -1,36 +1,74 @@
 'use strict';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Swipeable from 'react-swipeable';
-import Home from './routes/home.jsx';
+import Hammer from 'hammerjs';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import 'expose?$!expose?jQuery!jquery';
+import 'bootstrap-webpack';
+import Header from './components/header.jsx';
+import RadioPi from './routes/radiopi.jsx';
+import WakeOnLan from './routes/wakeonlan.jsx';
 
-class Index extends React.Component {
+class App extends React.Component {
     constructor (props) {
         super(props);
-        this.swipedRight = this.swipedRight.bind(this);
-        this.swipedLeft = this.swipedLeft.bind(this);
+        this.swipeLeft = this.swipeLeft.bind(this);
+        this.swipeRight = this.swipeRight.bind(this);
+
+        this.state = {
+            menu: false,
+            title: 'Home Control'
+        };
     }
-    swipedRight () {
-        this.refs.home.setState({
-            menu: true
-        });
-    }
-    swipedLeft () {
-        this.refs.home.setState({
+    swipeLeft (e) {
+        if (e.pointerType == 'mouse') return;
+        this.setState({
             menu: false
         });
     }
+    swipeRight (e) {
+        if (e.pointerType == 'mouse') return;
+        this.setState({
+            menu: true
+        });
+    }
+    componentWillUpdate (newProps, newState) {
+        this.refs.header.setState({
+            menu: newState.menu
+        });
+    }
+    componentDidMount () {
+        this.hammer = new Hammer(document.getElementById('app'), {});
+        this.hammer.on('swipeleft', this.swipeLeft);
+        this.hammer.on('swiperight', this.swipeRight);
+    }
+    componentWillUnmount () {
+        this.hammer.off('swipeleft');
+        this.hammer.off('swiperight');
+    }
     render () {
+        document.title = this.state.title;
         return (
-            <Swipeable
-                onSwipedRight={this.swipedRight}
-                onSwipedLeft={this.swipedLeft}>
-                <Home ref="home" />
-            </Swipeable>
+            <div>
+                <Header ref="header" documentTitle={this.state.title} />
+                <main> 
+                    {this.props.children}
+                </main>
+            </div>
         );
     }
 }
+App.propTypes = {
+    children: React.PropTypes.node
+};
+
 ReactDOM.render(
-    <Index />,
+    <Router history={browserHistory}>
+        <Route path="/" component={App}>
+            <IndexRoute component={RadioPi} />
+            <Route path="/radiopi" component={RadioPi}/>
+            <Route path="/wakeonlan" component={WakeOnLan}/>
+        </Route>
+    </Router>,
     document.getElementById('app')
 );
