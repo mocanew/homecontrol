@@ -5,20 +5,29 @@ var precss = require('precss');
 module.exports = {
     devServer: {
         host: '0.0.0.0',
-        port: 8090
+        port: 8090,
+        historyApiFallback: {
+            index: '/'
+        }
     },
     entry: [
         'webpack-dev-server/client',
         'webpack/hot/only-dev-server',
-        './student/js/student.jsx',
-        './teacher/js/teacher.jsx'
+        './www/index.jsx'
     ],
     output: {
         path: './build',
-        filename: '[name].js',
-        publicPath: '/bundle'
+        filename: 'bundle.js',
+        publicPath: '/assets'
+    },
+    amd: {
+        jQuery: true 
     },
     module: {
+        preLoaders: [
+            { test: /\.js?$/, exclude: /node_modules/, loader: 'eslint-loader' },
+            { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
+        ],
         loaders: [
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'react-hot' },
             {
@@ -36,7 +45,11 @@ module.exports = {
                 test: /\.scss$/,
                 loaders: ['style', 'css', 'postcss', 'sass']
             },
-            { test: /\.css$/, loaders: ['style', 'css', 'postcss'] }
+            { test: /\.css$/, loaders: ['style', 'css', 'postcss'] },
+            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file' },
+            { test: /\.(woff|woff2)$/, loader:'url?prefix=font/&limit=5000' },
+            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream' },
+            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml' }
         ]
     },
     postcss: function () {
