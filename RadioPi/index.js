@@ -142,12 +142,13 @@ function startRadio (station) {
 
     if (!url || !url.stream) {
         url = stations[0];
-        log.warning ('Start radio received an empty station url');
+        log.warn ('Start radio received an empty station url');
     }
-    var index;
+    var index = -1;
     stations.forEach((e, i) => {
         if (e.stream == url.stream) index = i;
     });
+    if (index == -1) return log.warn ('Radio was given a foreign stream url');
     station = stations[index];
     url = station.stream;
 
