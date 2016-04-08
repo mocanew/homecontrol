@@ -115,7 +115,6 @@ io.on('connection', function (socket) {
         data: e
     }));
     socket.on('Radio:state:request', () => {
-        log.debug('state request');
         messageToServer({
             server: 'Radio',
             name: 'Radio:state'
