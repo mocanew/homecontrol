@@ -17,8 +17,14 @@ var socket = io.connect('http://localhost', {
     reconnectionDelayMax: 1000
 });
 socket.on('connect', () => {
-    log.debug('connected');
+    log.debug('Connected to homeControl');
     socket.emit('setServerName', 'WakeOnLan');
+});
+socket.on('list', () => {
+    socket.emit('WakeOnLan:response', {
+        type: 'list',
+        ips: ips
+    });
 });
 socket.on('wol', (e) => {
     log.debug(e);
@@ -40,11 +46,17 @@ socket.on('wol', (e) => {
     ], (err, result) => {
         if (err || !result) return log.error(err);
 
-        log.debug('WOL', e.mac, result);
+        log.debug('WOL', {
+            type: 'wol',
+            mac: e.mac,
+            ip: result.ip,
+            isAlive: result.alive
+        });
         socket.emit('WakeOnLan:response', {
             type: 'wol',
             mac: e.mac,
-            isAlive: result
+            ip: result.ip,
+            isAlive: result.alive
         });
     });
 });
@@ -63,10 +75,16 @@ socket.on('check', (e) => {
     ], (err, result) => {
         if (err || !result) return log.error(err);
 
-        log.debug('Check', e.mac, e.ip, result);
+        log.debug('Check', {
+            type: 'check',
+            mac: e.mac,
+            ip: result.ip,
+            isAlive: result.alive
+        });
         socket.emit('WakeOnLan:response', {
             type: 'check',
             mac: e.mac,
+            ip: result.ip,
             isAlive: result.alive
         });
     });
@@ -95,6 +113,7 @@ function ping (ip, callback) {
     Ping.promise.probe(ip, {
         timeout: 5
     }).then(function (t) {
-        callback(null, t.alive);
+        t.ip = ip;
+        callback(null, t);
     });
 }

@@ -53,7 +53,7 @@ io.on('connection', function (socket) {
             delete clients[socket.id];
         }
         else if (socket.name) {
-            log.info('Lost connection with ' + socket.name);
+            log.warn('Lost connection with ' + socket.name);
             delete servers[socket.name];
         }
     });
@@ -73,6 +73,10 @@ io.on('connection', function (socket) {
         server: 'WakeOnLan',
         name: 'wol',
         data: e
+    }));
+    socket.on('WakeOnLan:list', () => messageToServer({
+        server: 'WakeOnLan',
+        name: 'list'
     }));
     socket.on('WakeOnLan:check', (e) => messageToServer({
         server: 'WakeOnLan',
