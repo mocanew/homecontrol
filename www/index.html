@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home Control</title>
+        <link href="font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div id="app">
+            <!-- this is where the root react component will get rendered -->
+        </div>
+        <script>
+            window.domain = window.location.protocol + '//' + window.location.hostname;
+            
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = window.domain + ":8090/bundle/student.js";
+            document.body.appendChild(js);
+            
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = window.domain + ":8090/webpack-dev-server.js";
+            document.body.appendChild(js);
+        </script>
+    </body>
+</html>
