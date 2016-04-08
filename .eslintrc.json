@@ -19,7 +19,7 @@
     "rules": {
         "indent": [0, 4],
         "quotes": [2, "single"],
-        "semi": [2, "always"],
+        "semi": [1, "always"],
         "brace-style": [2, "stroustrup"],
         "no-lonely-if": 2,
         "no-console": 0,
@@ -27,9 +27,10 @@
         "space-before-blocks": 2,
         "keyword-spacing": 2,
         "semi-spacing": 2,
-        "arrow-spacing": 2
+        "arrow-spacing": 2,
+        "no-unused-vars": 1
     },
     "globals": {
-        "io": true
+        "socket": true
     }
 }
