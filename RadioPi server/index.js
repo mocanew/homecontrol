@@ -2,7 +2,7 @@ const speakerPin = 11;
 const gpio = require('rpi-gpio');
 const fs = require('fs');
 const lirc = require('lirc_node');
-const Server = require('socket.io');
+const io = require('socket.io-client');
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatColor).pipe(Minilog.backends.console);
 const log = Minilog('RadioPi \t');
@@ -12,6 +12,15 @@ const player = new MPlayer();
 const dir = '/home/radiopi';
 
 const tvRemote = true;
+
+var socket = io.connect('http://localhost', {
+    reconnect: true,
+    reconnectionDelayMax: 1000
+});
+socket.on('connect', () => {
+    log.debug('connected');
+    socket.emit('setServerName', 'Radio');
+});
 
 gpio.setup(speakerPin, gpio.DIR_OUT, () => {
     var stations = JSON.parse(fs.readFileSync(dir + '/radioStations.json'));
@@ -28,7 +37,7 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
         log.info(Date.now(), 'Mplayer stopped', restart);
         if (!restart) {
             updateGPIO (speakerPin, false);
-            io.to('clients').emit('state', state);
+            socket.emit('Radio:state', state);
         }
     });
 
@@ -78,30 +87,16 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
         }, 500);
     }
 
-    var io = new Server();
-    io.listen(7274);
-
-    io.on('connection', (socket) => {
-        socket.join('clients');
-        socket.emit('radioStations', stations);
-
-        socket.emit('playState', state);
-
-        socket.on('startRadio', startRadio);
-        socket.on('stopRadio', () => { 
-            stopRadio(); 
-        });
-        socket.on('toggleRadio', toggleRadio);
-        socket.on('requestStations', () => {
-            socket.emit('radioStations', stations);
-        });
+    socket.on('Radio:start', startRadio);
+    socket.on('Radio:stop', stopRadio);
+    socket.on('Radio:toggle', toggleRadio);
+    socket.on('Radio:state', () => {
+        socket.emit('Radio:state', state);
+        socket.emit('Radio:stations', stations);
     });
 
     function updateGPIO (pin, state, callback) {
         if (typeof callback != 'function') callback = function () {};
-
-        //        if (pinState[pin] === state) return callback();
-        //        pinState[pin] = state;
 
         gpio.write(pin, state, callback);
     }
@@ -139,7 +134,7 @@ gpio.setup(speakerPin, gpio.DIR_OUT, () => {
         state.playing = true;
         state.lastPlayed = stations.indexOf(station);
 
-        io.to('clients').emit('state', state);
+        socket.emit('Radio:state', state);
     }
 
     function stopRadio () {

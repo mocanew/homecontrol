@@ -2,7 +2,7 @@ var playstate = false;
 function togglePlayState (e) {
     if (typeof e != 'boolean') {
         playstate = !playstate;
-        socket.emit(playstate ? 'startRadio' : 'stopRadio', $('.selected').attr('data-stream'));
+        socket.emit(playstate ? 'Radio:start' : 'Radio:stop', $('.selected').attr('data-stream'));
     }
     else {
         playstate = e;
@@ -20,14 +20,15 @@ var selected = false;
 var socket;
 
 document.addEventListener('deviceready', function () {
-    socket = io.connect('http://rontav.go.ro:7274', {
+    socket = io.connect('http://rontav.go.ro:80', {
         'reconnect': true,
         'reconnection delay': 500,
         'reconnection limit': 1000,
         'max reconnection attempts': 'Infinity'
     });
 
-    socket.on('radioStations', function (e) {
+    socket.on('connect', () => socket.emit('Radio:state:request'));
+    socket.on('Radio:stations', function (e) {
         var content = '';
 
         $.each(e, function (index, value) {
@@ -39,7 +40,7 @@ document.addEventListener('deviceready', function () {
         $('.content').html(content);
     });
 
-    socket.on('state', function (e) {
+    socket.on('Radio:state', function (e) {
         $('.playing').removeClass('playing');
         togglePlayState(e.playing);
 
@@ -56,12 +57,12 @@ document.addEventListener('deviceready', function () {
         selected = $(this);
 
         if (selected.hasClass('selected')) {
-            socket.emit('stopRadio');
+            socket.emit('Radio:stop');
             togglePlayState(false);
         }
         else {
             $('.selected').removeClass('selected playing');
-            socket.emit('startRadio', selected.attr('data-stream'));
+            socket.emit('Radio:start', selected.attr('data-stream'));
             selected.addClass('selected');
             togglePlayState(true);
         }
@@ -80,7 +81,7 @@ document.addEventListener('deviceready', function () {
         }
         $('.selected').removeClass('selected playing');
         e.addClass('selected playing');
-        socket.emit('startRadio', e.attr('data-stream'));
+        socket.emit('Radio:start', e.attr('data-stream'));
     });
     $('.loader').hide();
 });
