@@ -26,8 +26,6 @@ var state = {
     playing: false,
     volume: 100
 };
-var restart = false;
-
 
 var socket = io.connect('http://localhost', {
     reconnect: true,
@@ -41,12 +39,15 @@ socket.on('connect', () => {
 if (gpio) {
     gpio.setup(speakerPin, gpio.DIR_OUT, startup);
 }
+else {
+    startup();
+}
 function startup () {
     if (player) {
         player.on('stop', () => {
             state.playing = false;
-            log.info(Date.now(), 'Mplayer stopped', restart);
-            if (!restart) {
+            log.info('Mplayer stopped');
+            if (!state.playing) {
                 updateGPIO (speakerPin, false);
                 socket.emit('Radio:state', state);
             }
@@ -63,13 +64,13 @@ function startup () {
             temp = JSON.parse(newFile);
         }
         catch (e) {
-            return log.error(Date.now(), e);
+            return log.error(e);
         }
         stations = temp;
-        log.info(Date.now(), 'RadioStations updated');
+        log.info('RadioStations updated');
     });
 
-    if (tvRemote) {
+    if (gpio && tvRemote) {
         lirc.init();
         lirc.addListener((data) => {
             if (!data || !data.key || !data.repeat) return;
@@ -100,6 +101,8 @@ function startup () {
     }
 
     socket.on('Radio:start', startRadio);
+    socket.on('Radio:next', () => startRadio(nextStation()));
+    socket.on('Radio:prev', () => startRadio(previousStation()));
     socket.on('Radio:stop', stopRadio);
     socket.on('Radio:toggle', toggleRadio);
     socket.on('Radio:state', () => {
@@ -108,24 +111,27 @@ function startup () {
     });
 
     updateGPIO(speakerPin, false);
+    socket.emit('Radio:state', state);
+    socket.emit('Radio:stations', stations);
     log.info('Startup completed');
 }
 
 function updateGPIO (pin, state, callback) {
-    if (gpio && typeof callback != 'function') callback = function () {};
+    if (typeof callback != 'function') callback = function () {};
 
+    if (!gpio) return callback();
     gpio.write(pin, state, callback);
 }
 
 function nextStation () {
-    state.lastPlayed++;
-    state.lastPlayed %= stations.length;
-    return stations[state.lastPlayed];
+    var i = state.lastPlayed + 1;
+    i %= stations.length;
+    return stations[i];
 }
 function previousStation () {
-    state.lastPlayed--;
-    if (state.lastPlayed < 0) state.lastPlayed = stations.length + state.lastPlayed;
-    return stations[state.lastPlayed];
+    var i = state.lastPlayed - 1;
+    if (i < 0) i = stations.length + i;
+    return stations[i];
 }
 
 function startRadio (station) {
@@ -136,34 +142,42 @@ function startRadio (station) {
 
     if (!url || !url.stream) {
         url = stations[0];
-        log.warning (Date.now(), 'Start radio received an empty station url');
+        log.warning ('Start radio received an empty station url');
     }
-    log.info(Date.now(), 'Start radio', url.name);
-    station = url;
-    url = url.stream;
+    var index;
+    stations.forEach((e, i) => {
+        if (e.stream == url.stream) index = i;
+    });
+    station = stations[index];
+    url = station.stream;
 
-    restart = true;
+    if (state.playing && index == state.lastPlayed) return;
+
+    state.playing = true;
+    state.lastPlayed = index;
+
     if (player) {
         player.openFile(url);
         player.play();
     }
     updateGPIO(speakerPin, true);
 
-    state.playing = true;
-    state.lastPlayed = stations.indexOf(station);
-
     socket.emit('Radio:state', state);
+    log.info('Start radio', station.name);
 }
 
 function stopRadio () {
-    restart = false;
+    state.playing = false;
     if (player) {
         player.stop();
+    }
+    else {
+        socket.emit('Radio:state', state);
     }
 }
 
 function toggleRadio () {
-    restart ? stopRadio() : startRadio();
+    state.playing ? stopRadio() : startRadio();
 }
 
 function changeVolume (mode) {
