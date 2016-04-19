@@ -1,49 +1,40 @@
 <!DOCTYPE html>
-<head>
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-    <link rel="stylesheet" type="text/css" href="scss/plugins/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/roboto.css">
-    <link rel="stylesheet" type="text/css" href="css/material.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <title>Radio Pi</title>
-</head>
-<body>
-    <div>
-        <div class="loader">
-            Loading
-        </div>
-        <div class="materialList content">
+<html>
+    <head>
+        <meta name="viewport"
+              content="user-scalable=no,
+                       initial-scale=1,
+                       maximum-scale=1,
+                       minimum-scale=1,
+                       width=device-width">
 
+        <!-- Allow everything in development -->
+        <meta http-equiv="Content-Security-Policy"
+              content="default-src *;
+                       style-src 'self' 'unsafe-inline';
+                       script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <title>Home Control</title>
+        <link href="font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div id="app">
+            <!-- this is where the root react component will get rendered -->
         </div>
-        <div class="postName"></div>
-        <div class="buttons">
-            <button id="prev" class="materialBtn flat iconBtn btn-leftArrow">
-                <span>
-                    <span class="s1"></span>
-                    <span class="s2"></span>
-                    <span class="s3"></span>
-                </span>
-            </button>
-            <button id="play" class="materialBtn flat iconBtn btn-play">
-                <span>
-                    <span class="s1"></span>
-                    <span class="s2"></span>
-                    <span class="s3"></span>
-                </span>
-            </button>
-            <button id="next" class="materialBtn flat iconBtn btn-leftArrow">
-                <span>
-                    <span class="s1"></span>
-                    <span class="s2"></span>
-                    <span class="s3"></span>
-                </span>
-            </button>
-        </div>
-    </div>
-    <script type="text/javascript" src="js/plugins/jquery-v2.2.0.min.js"></script>
-    <script type="text/javascript" src="js/plugins/socket.io-1.0.3.js"></script>
-    <script type="text/javascript" src="js/plugins/material.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
-</body>
+        <script src="cordova.js"></script>
+        <script src="/js/socket.io-1.4.3.js"></script>
+        <script>
+            window.domain = window.location.protocol + '//' + window.location.hostname;
+
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = window.domain + ":8090/assets/bundle.js";
+            document.body.appendChild(js);
+
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = window.domain + ":8090/webpack-dev-server.js";
+            document.body.appendChild(js);
+            var socket = io();
+        </script>
+    </body>
+</html>
