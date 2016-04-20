@@ -9,18 +9,19 @@
         <div id="app">
             <!-- this is where the root react component will get rendered -->
         </div>
+        <script src="/js/throttle.js"></script>
         <script src="/js/socket.io-1.4.3.js"></script>
         <script>
             window.domain = window.location.protocol + '//' + window.location.hostname;
-            
+
             var js = document.createElement("script");
             js.type = "text/javascript";
-            js.src = window.domain + ":8090/assets/bundle.js";
+            js.src = window.domain + ":8091/assets/bundle.js";
             document.body.appendChild(js);
-            
+
             var js = document.createElement("script");
             js.type = "text/javascript";
-            js.src = window.domain + ":8090/webpack-dev-server.js";
+            js.src = window.domain + ":8091/webpack-dev-server.js";
             document.body.appendChild(js);
             var socket = io();
         </script>
