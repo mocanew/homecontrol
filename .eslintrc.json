@@ -23,7 +23,7 @@
         "brace-style": [2, "stroustrup"],
         "no-lonely-if": 2,
         "no-console": 0,
-        "space-before-function-paren": 2,
+        "space-before-function-paren": 0,
         "space-before-blocks": 2,
         "keyword-spacing": 2,
         "semi-spacing": 2,
