@@ -212,4 +212,5 @@ function changeVolume(mode) {
     if (player) {
         player.volume(state.volume);
     }
+    socket.emit('Radio:state', state);
 }
