@@ -45,6 +45,7 @@ class Header extends React.Component {
             big: !this.state.collapse,
             open: this.state.collapse && this.state.menu
         });
+        window.menu = this.state.menu;
 
         return (
             <div className={classes}>

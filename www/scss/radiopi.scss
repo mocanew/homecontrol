@@ -8,7 +8,7 @@
 }
 
 .radiopi {
-    padding-bottom: $headerHeight;
+    padding-bottom: 2 * $headerHeight;
 }
 
 .loading {
@@ -45,7 +45,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: $headerHeight;
+    height: 2 * $headerHeight;
     text-align: center;
     background: $main-600;
     transition: left 0.5s, width 0.5s;
@@ -58,7 +58,7 @@
         vertical-align: middle;
         transition: background 0.5s;
 
-        &:first-of-type {
+        &.leftArrow{
             margin-left: 0;
         }
         &:hover {

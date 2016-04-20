@@ -10,7 +10,7 @@ import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
 
 class App extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.swipeLeft = this.swipeLeft.bind(this);
         this.swipeRight = this.swipeRight.bind(this);
@@ -20,19 +20,19 @@ class App extends React.Component {
             title: 'Home Control'
         };
     }
-    swipeLeft (e) {
-        if (e.pointerType == 'mouse') return;
+    swipeLeft(e) {
+        if (e.pointerType == 'mouse' || window.volumeSlider) return;
         this.setState({
             menu: false
         });
     }
-    swipeRight (e) {
-        if (e.pointerType == 'mouse') return;
+    swipeRight(e) {
+        if (e.pointerType == 'mouse' || window.volumeSlider) return;
         this.setState({
             menu: true
         });
     }
-    componentWillUpdate (newProps, newState) {
+    componentWillUpdate(newProps, newState) {
         if (newProps.location.pathname != this.props.location.pathname) {
             newState.menu = false;
         }
@@ -40,21 +40,26 @@ class App extends React.Component {
             menu: newState.menu
         });
     }
-    componentDidMount () {
+    componentDidMount() {
         this.hammer = new Hammer(document.getElementById('app'), {});
         this.hammer.on('swipeleft', this.swipeLeft);
         this.hammer.on('swiperight', this.swipeRight);
+
+        var elem = document.createElement('meta');
+        elem.name = 'theme-color';
+        elem.content = getComputedStyle(document.querySelector('nav.horizontal')).backgroundColor;
+        document.getElementsByTagName('head')[0].appendChild(elem);
     }
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.hammer.off('swipeleft');
         this.hammer.off('swiperight');
     }
-    render () {
+    render() {
         document.title = this.state.title;
         return (
             <div>
                 <Header ref="header" documentTitle={this.state.title} />
-                <main> 
+                <main>
                     {this.props.children}
                 </main>
             </div>
