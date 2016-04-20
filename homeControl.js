@@ -114,6 +114,11 @@ io.on('connection', function (socket) {
         name: 'Radio:toggle',
         data: e
     }));
+    socket.on('Radio:volume', (e) => messageToServer({
+        server: 'Radio',
+        name: 'Radio:volume',
+        data: e
+    }));
     socket.on('Radio:state:request', () => {
         messageToServer({
             server: 'Radio',
