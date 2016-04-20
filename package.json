@@ -43,6 +43,7 @@
     "bootstrap": "^3.3.6",
     "bootstrap-webpack": "0.0.5",
     "classnames": "^2.2.3",
+    "css-loader": "^0.23.1",
     "exports-loader": "^0.6.3",
     "expose-loader": "^0.7.1",
     "express": "^4.13.4",
