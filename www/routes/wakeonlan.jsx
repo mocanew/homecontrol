@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../components/card.jsx';
+import Card from '../components/wol-computer.jsx';
 import '../scss/wakeonlan.scss';
 
 class WakeOnLan extends React.Component {
