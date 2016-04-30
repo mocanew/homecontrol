@@ -20,13 +20,13 @@ socket.on('connect', () => {
     log.debug('Connected to homeControl');
     socket.emit('setServerName', 'WakeOnLan');
 });
-socket.on('list', () => {
+socket.on('WakeOnLan:list', () => {
     socket.emit('WakeOnLan:response', {
         type: 'list',
         ips: ips
     });
 });
-socket.on('wol', (e) => {
+socket.on('WakeOnLan', (e) => {
     log.debug(e);
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
     if (!e || !e.mac || !e.mac.match(macRegex)) return;
@@ -60,7 +60,7 @@ socket.on('wol', (e) => {
         });
     });
 });
-socket.on('check', (e) => {
+socket.on('WakeOnLan:ping', (e) => {
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
     e.ip = e.ip ? e.ip.trim() : '';
     if (!e || ((!e.mac || !e.mac.match(macRegex)) && !e.ip)) return;

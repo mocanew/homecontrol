@@ -46,8 +46,6 @@ io = io(server);
 var clients = {};
 var servers = {};
 
-var wolCache = {};
-
 io.on('connection', function (socket) {
     clients[socket.id] = socket;
     socket.join('clients');
@@ -75,20 +73,19 @@ io.on('connection', function (socket) {
 
     socket.on('WakeOnLan', (e) => messageToServer({
         server: 'WakeOnLan',
-        name: 'wol',
+        name: 'WakeOnLan',
         data: e
     }));
     socket.on('WakeOnLan:list', () => messageToServer({
         server: 'WakeOnLan',
-        name: 'list'
+        name: 'WakeOnLan:list'
     }));
-    socket.on('WakeOnLan:check', (e) => messageToServer({
+    socket.on('WakeOnLan:ping', (e) => messageToServer({
         server: 'WakeOnLan',
-        name: 'check',
+        name: 'WakeOnLan:ping',
         data: e
     }));
     socket.on('WakeOnLan:response', (e) => {
-        wolCache[e.mac] = e.isAlive;
         io.to('clients').emit('WakeOnLan:response', e);
     });
 
