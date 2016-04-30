@@ -56,9 +56,8 @@ class Card extends React.Component {
             backgroundImage: 'url("' + this.props.image + '")'
         };
         return (
-            <div className="card col-xs-12 col-sm-4 col-md-4">
-            <div className="wrapper">
-                <div className={power} onClick={this.ping}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
+            <div className="card">
+                <div className={power}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                 <div className="image" style={imageStyle}></div>
                 <div className="titleRow">
                     <div className="title">{this.name}</div>
@@ -68,7 +67,6 @@ class Card extends React.Component {
                     <MaterialButton buttonStyle="flat" onClick={this.ping}>Ping</MaterialButton>
                     <MaterialButton buttonStyle="flat" onClick={this.wake}>Wake</MaterialButton>
                 </div>
-            </div>
             </div>
         );
     }
