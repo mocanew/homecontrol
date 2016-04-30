@@ -7,20 +7,44 @@ class Card extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            power: false
+            power: this.props.power
         };
         this.wake = this.wake.bind(this);
+        this.ping = this.ping.bind(this);
+        
+        this.name = this.props.name ? this.props.name : 'Computer ' + this.props.id;
+    }
+    static get defaultProps () {
+        return {
+            power: false,
+            name: '',
+            ip: '',
+            mac: '',
+            image: 'images/general.jpg'
+        };
+    }
+    componentWillReceiveProps (nextProps) {
+        this.setState({
+            power: nextProps.power
+        });
     }
     wake () {
-        var a = this.state.power;
         this.setState({
             power: ''
         });
-        setTimeout(() => {
-            this.setState({
-                power: !a
-            });
-        }, Math.random() * 1000);
+        socket.emit('WakeOnLan', {
+            ip: this.props.ip,
+            mac: this.props.mac
+        });
+    }
+    ping () {
+        this.setState({
+            power: ''
+        });
+        socket.emit('WakeOnLan:ping', {
+            ip: this.props.ip,
+            mac: this.props.mac
+        });
     }
     render () {
         var power = classNames({
@@ -36,21 +60,30 @@ class Card extends React.Component {
                 <div className={power}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                 <div className="image" style={imageStyle}></div>
                 <div className="titleRow">
-                    <div className="title">{this.props.title}</div>
-                    <div className="subtitle">{this.props.subtitle}</div>
+                    <div className="title">{this.name}</div>
+                    <div className="subtitle">{this.props.ip && this.props.ip.length ? (this.props.mac && this.props.mac.length ? this.props.ip + ' - ' + this.props.mac : this.props.ip) : this.props.mac}</div>
                 </div>
                 <div className="buttonsRow">
-                    <MaterialButton buttonStyle="flat">Ping</MaterialButton>
-                    <MaterialButton buttonStyle="flat" onClick={this.wake} >Wake</MaterialButton>
+                    <MaterialButton buttonStyle="flat" onClick={this.ping}>Ping</MaterialButton>
+                    <MaterialButton buttonStyle="flat" onClick={this.wake}>Wake</MaterialButton>
                 </div>
             </div>
         );
     }
 }
 Card.propTypes = {
-    title: React.PropTypes.string,
-    subtitle: React.PropTypes.string,
-    image: React.PropTypes.string
+    id: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.number
+    ]),
+    name: React.PropTypes.string,
+    ip: React.PropTypes.string,
+    mac: React.PropTypes.string,
+    image: React.PropTypes.string,
+    power: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.boolean
+    ])
 };
 
 export default Card;
