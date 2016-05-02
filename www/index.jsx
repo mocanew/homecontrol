@@ -41,7 +41,7 @@ class App extends React.Component {
         });
     }
     componentDidMount() {
-        this.hammer = new Hammer(document.getElementById('app'), {});
+        this.hammer = new Hammer(document.getElementById('root'), {});
         this.hammer.on('swipeleft', this.swipeLeft);
         this.hammer.on('swiperight', this.swipeRight);
 
@@ -79,5 +79,5 @@ ReactDOM.render(
             <Route path="/wakeonlan" component={WakeOnLan}/>
         </Route>
     </Router>,
-    document.getElementById('app')
+    document.getElementById('root')
 );
