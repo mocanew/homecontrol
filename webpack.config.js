@@ -21,7 +21,7 @@ module.exports = {
         publicPath: '/assets'
     },
     amd: {
-        jQuery: true 
+        jQuery: true
     },
     module: {
         preLoaders: [
@@ -41,7 +41,7 @@ module.exports = {
             { test: /\.png$/, loader: 'url-loader?limit=10000&minetype=image/png' },
             { test: /\.jpg$/, loader: 'url-loader?limit=10000&minetype=image/jpg' },
             { test: /\.gif$/, loader: 'url-loader?limit=10000&minetype=image/gif' },
-            { 
+            {
                 test: /\.scss$/,
                 loaders: ['style', 'css', 'postcss', 'sass']
             },
