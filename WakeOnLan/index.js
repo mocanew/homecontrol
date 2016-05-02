@@ -12,7 +12,7 @@ const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost', {
+var socket = io.connect('http://localhost:8080', {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
