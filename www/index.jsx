@@ -1,10 +1,15 @@
 'use strict';
+import 'expose?$!expose?jQuery!jquery';
+import 'imports?this=>window!./js/throttle.js';
+import io from 'socket.io-client';
+window.socket = io();
+import './font-awesome-4.5.0/css/font-awesome.min.css';
+import 'bootstrap-webpack';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Hammer from 'hammerjs';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
-import 'expose?$!expose?jQuery!jquery';
-import 'bootstrap-webpack';
 import Header from './components/header.jsx';
 import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
