@@ -33,7 +33,7 @@ var state = {
     stopping: false
 };
 
-var socket = io.connect('http://localhost', {
+var socket = io.connect('http://localhost:8080', {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
