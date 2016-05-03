@@ -49,5 +49,5 @@ async.waterfall([
     }
 ], (err) => {
     console.log(err ? err : 'Done');
-    process.exit();
+    process.exit(err ? 1 : 0);
 });
