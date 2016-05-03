@@ -1,4 +1,12 @@
-const files = ['homeControl.js', 'package.json', 'LICENSE', 'www/index.html', 'www/index.jsx'];
+const filesArray = [
+    {
+        base: '',
+        files: ['homeControl.js', 'package.json', 'LICENSE']
+    },
+    {
+        base: 'www/',
+        files: ['index.html', 'index.jsx']
+    }];
 const dirs = ['RadioPi', 'WakeOnLan', 'build'];
 const async = require('async');
 
@@ -26,21 +34,26 @@ var ssh = new SSH({
     baseDir: conf._HomePath
 });
 var t = false;
+
 async.waterfall([
-    callback => ssh.exec('rm -r www && mkdir www', {
+    callback => ssh.exec('[ -d www ] || mkdir www', {
         out: console.log.bind(console),
         err: console.log.bind(console),
-        exit: (code) => {
+        exit: () => {
+            if (t) return;
+            callback();
             t = true;
-            console.log(code);
-            if (!t) callback();
         }
-    }).start(),
+    }).start({
+        sucess: callback,
+        fail: callback
+    }),
     callback => {
+        console.log('done mkdir');
         var Client = require('scp2').Client;
         var client = new Client(conf);
 
-        async.eachSeries(files, (file, cb) => client.upload(file, conf._HomePath, cb),
+        async.eachSeries(filesArray, (files, cbb) => async.eachSeries(files.files, (file, cb) => client.upload(files.base + file, conf._HomePath + files.base, cb), cbb),
             (err) => {
                 console.log(err ? err : 'Files uploaded');
                 callback(err);
@@ -58,12 +71,11 @@ async.waterfall([
     callback => {
         ssh.exec('ls ./ && npm install --production && service wakeonlan restart && service radiopi restart && service homecontrol restart', {
             out: console.log.bind(console),
-            err: console.log.bind(console),
-            exit: (code) => {
-                console.log(code);
-                callback();
-            }
-        }).start();
+            err: console.log.bind(console)
+        }).start({
+            sucess: callback,
+            fail: callback
+        });
     }
 ], (err) => {
     console.log(err ? err : 'Done');
