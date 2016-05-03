@@ -13,7 +13,9 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', express.static(dir + '/www/'));
+app.get('/', (req, res) => res.sendFile(dir + '/www/index'+ (production ? '' : '-debug') +'.html'));
+app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
+
 if (production) {
     app.use('/assets/', express.static(dir + '/build/'));
 }
