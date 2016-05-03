@@ -1,4 +1,4 @@
-const dir = process.env.windir ? './RadioPi' : '/home/pi/homecontrol/RadioPi';
+const dir = process.env.windir ? './RadioPi' : '/home/node/homecontrol/RadioPi';
 const tvRemote = true;
 const speakerPin = 11;
 const fs = require('fs');
