@@ -31,6 +31,7 @@
         "no-unused-vars": 1
     },
     "globals": {
-        "socket": true
+        "socket": true,
+        "io": true
     }
 }
