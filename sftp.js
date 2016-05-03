@@ -1,11 +1,19 @@
-var files = ['homeControl.js', 'package.json', 'LICENSE', 'www/index.html', 'www/index.jsx'];
-var dirs = ['RadioPi', 'WakeOnLan', 'build'];
+const files = ['homeControl.js', 'package.json', 'LICENSE', 'www/index.html', 'www/index.jsx'];
+const dirs = ['RadioPi', 'WakeOnLan', 'build'];
 const async = require('async');
+
+const fs = require('fs');
+var secure = JSON.parse(fs.readFileSync('sftp.json', 'utf8'));
+
+if (!secure.username || !secure.username.length || !secure.password || !secure.password.length) {
+    console.log('No username or password for sftp');
+    process.exit(1);
+}
 
 var conf = {
     host: 'rontav.go.ro',
-    username: '',
-    password: '',
+    username: secure.username,
+    password: secure.password,
     _HomePath: '/home/node/homecontrol/'
 };
 
