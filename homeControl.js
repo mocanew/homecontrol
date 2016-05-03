@@ -2,6 +2,7 @@ const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('HomeControl \t');
 
+var production = process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() == 'production';
 const dir = process.cwd();
 var io = require('socket.io');
 
@@ -12,8 +13,10 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', express.static(dir + '/www'));
-
+app.use('/', express.static(dir + '/www/'));
+if (production) {
+    app.use('/assets/', express.static(dir + '/build/'));
+}
 app.get('*', function (req, res) {
     res.redirect('/');
 });
