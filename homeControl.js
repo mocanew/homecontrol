@@ -2,7 +2,7 @@ const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('HomeControl \t');
 
-var production = process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() == 'production';
+var production = !process.env.windir;//process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() == 'production';
 const dir = process.cwd();
 var io = require('socket.io');
 
