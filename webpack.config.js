@@ -11,8 +11,6 @@ module.exports = {
         }
     },
     entry: [
-        'webpack-dev-server/client',
-        'webpack/hot/only-dev-server',
         './www/index.jsx'
     ],
     output: {
@@ -47,7 +45,7 @@ module.exports = {
             },
             { test: /\.css$/, loaders: ['style', 'css', 'postcss'] },
             { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file' },
-            { test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader:'url?limit=5000' },
+            { test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=5000' },
             { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream' },
             { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml' }
         ]
