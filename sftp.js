@@ -38,7 +38,7 @@ async.waterfall([
             pass: conf.password,
             baseDir: conf._HomePath
         });
-        ssh.exec('ls ./ && npm install --production && service wakeonlan restart && service radiopi restart && service homeControl restart', {
+        ssh.exec('ls ./ && npm install --production && service wakeonlan restart && service radiopi restart && service homecontrol restart', {
             out: console.log.bind(console),
             err: console.log.bind(console),
             exit: (code) => {
