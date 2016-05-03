@@ -25,14 +25,15 @@ var ssh = new SSH({
     pass: conf.password,
     baseDir: conf._HomePath
 });
-
+var t = false;
 async.waterfall([
-    callback => ssh.exec('mkdir www', {
+    callback => ssh.exec('rm -r www && mkdir www', {
         out: console.log.bind(console),
         err: console.log.bind(console),
         exit: (code) => {
+            t = true;
             console.log(code);
-            callback();
+            if (!t) callback();
         }
     }).start(),
     callback => {
