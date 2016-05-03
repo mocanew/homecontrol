@@ -9,7 +9,24 @@ var conf = {
     _HomePath: '/home/node/homecontrol/'
 };
 
+var SSH = require('simple-ssh');
+
+var ssh = new SSH({
+    host: conf.host,
+    user: conf.username,
+    pass: conf.password,
+    baseDir: conf._HomePath
+});
+
 async.waterfall([
+    callback => ssh.exec('mkdir www', {
+        out: console.log.bind(console),
+        err: console.log.bind(console),
+        exit: (code) => {
+            console.log(code);
+            callback();
+        }
+    }).start(),
     callback => {
         var Client = require('scp2').Client;
         var client = new Client(conf);
@@ -30,14 +47,6 @@ async.waterfall([
             });
     },
     callback => {
-        var SSH = require('simple-ssh');
-
-        var ssh = new SSH({
-            host: conf.host,
-            user: conf.username,
-            pass: conf.password,
-            baseDir: conf._HomePath
-        });
         ssh.exec('ls ./ && npm install --production && service wakeonlan restart && service radiopi restart && service homecontrol restart', {
             out: console.log.bind(console),
             err: console.log.bind(console),
