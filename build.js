@@ -1,7 +1,7 @@
 const async = require('async');
 const link = require('fs-symlink');
 const spawn = require('child_process').spawn;
-const exec = require('child_process').exec;
+const rimraf = require('rimraf');
 
 var colors;
 
@@ -20,6 +20,7 @@ function log (e, color) {
 }
 
 async.waterfall([
+    cb => rimraf('./build/', {}, cb),
     cb => {
         log('--- Webpack Build ---', 'yellow');
         var webpack = spawn(process.env.windir ? 'webpack.cmd' : 'webpack', ['--progress', '--optimize-minimize', '--optimize-dedupe', '--colors']);
@@ -36,14 +37,14 @@ async.waterfall([
     cb => {
         log('--- Symlink build folder to AppHomeControll/www/build ---', 'yellow');
         link('./build/', './AppHomeControll/www/build/', 'junction').then(cb);
-    },
-    cb => {
-        log('--- NPM Shrinkwrap ---', 'yellow');
-        var child = spawn(process.env.windir ? 'npm.cmd' : 'npm', ['shrinkwrap']);
-
-        child.stdout.on('data', data => process.stdout.write(data));
-        child.stderr.on('data', data => process.stdout.write(data));
-
-        child.on('exit', () => cb());
     }
+    // cb => {
+    //     log('--- NPM Shrinkwrap ---', 'yellow');
+    //     var child = spawn(process.env.windir ? 'npm.cmd' : 'npm', ['shrinkwrap']);
+
+    //     child.stdout.on('data', data => process.stdout.write(data));
+    //     child.stderr.on('data', data => process.stdout.write(data));
+
+    //     child.on('exit', () => cb());
+    // }
 ], (e) => log(e ? e : '--- Build finished ---', e ? 'red' : 'green'));
