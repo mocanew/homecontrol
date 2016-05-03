@@ -69,7 +69,7 @@ async.waterfall([
             });
     },
     callback => {
-        ssh.exec('ls ./ && npm install --production && service wakeonlan restart && service radiopi restart && service homecontrol restart', {
+        ssh.exec('ls ./ && npm install --production && reboot', {
             out: console.log.bind(console),
             err: console.log.bind(console)
         }).start({
