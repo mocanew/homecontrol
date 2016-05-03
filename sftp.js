@@ -1,4 +1,4 @@
-var files = ['homeControl.js', 'package.json', 'LICENSE'];
+var files = ['homeControl.js', 'package.json', 'LICENSE', 'www/index.html', 'www/index.jsx'];
 var dirs = ['RadioPi', 'WakeOnLan', 'build'];
 const async = require('async');
 
@@ -50,4 +50,4 @@ async.waterfall([
 ], (err) => {
     console.log(err ? err : 'Done');
     process.exit();
-})
+});
