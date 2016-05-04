@@ -69,7 +69,7 @@ async.waterfall([
             });
     },
     callback => {
-        ssh.exec('ls ./ && npm install --production && reboot', {
+        ssh.exec('ls ./ && npm install --production && sudo reboot && ~.', {
             out: console.log.bind(console),
             err: console.log.bind(console)
         }).start({
