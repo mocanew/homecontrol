@@ -1,5 +1,4 @@
 const async = require('async');
-const link = require('fs-symlink');
 const spawn = require('child_process').spawn;
 const rimraf = require('rimraf');
 
@@ -12,7 +11,7 @@ catch (e) {
     // eslint doesn't allow empty functions :D
 }
 
-function log (e, color) {
+function log(e, color) {
     if (colors) {
         e = colors[color](e);
     }
@@ -20,10 +19,11 @@ function log (e, color) {
 }
 
 async.waterfall([
-    cb => rimraf('./build/', {}, cb),
+    cb => rimraf('./assets/', {}, cb),
     cb => {
         log('--- Webpack Build ---', 'yellow');
-        var webpack = spawn(process.env.windir ? 'webpack.cmd' : 'webpack', ['--progress', '--optimize-minimize', '--optimize-dedupe', '--colors']);
+        var webpack = spawn(process.env.windir ? 'webpack.cmd' : 'webpack', ['--production', '--progress', '--optimize-minimize', '--optimize-dedupe', '--colors']);
+        // var webpack = spawn(process.env.windir ? 'webpack.cmd' : 'webpack', ['--progress', '--colors']); // debug
 
         webpack.stdout.on('data', data => process.stdout.write(data));
         webpack.stderr.on('data', data => process.stdout.write(data));
@@ -31,12 +31,9 @@ async.waterfall([
         webpack.on('exit', () => cb());
     },
     cb => {
-        log('--- Symlink build folder to www/build ---', 'yellow');
-        link('./build/', './www/build/', 'junction').then(cb);
-    },
-    cb => {
-        log('--- Symlink build folder to AppHomeControll/www/build ---', 'yellow');
-        link('./build/', './AppHomeControll/www/build/', 'junction').then(cb);
+        log('--- Copy assets folder to AppHomeControll/www/assets ---', 'yellow');
+        var copy = require('copy');
+        copy('./assets/*.*', './AppHomeControll/www/assets/', cb);
     }
     // cb => {
     //     log('--- NPM Shrinkwrap ---', 'yellow');

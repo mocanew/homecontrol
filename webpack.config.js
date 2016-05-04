@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
 var precss = require('precss');
 
-module.exports = {
+var exp = {
     devServer: {
         host: '0.0.0.0',
         port: 8090,
@@ -14,9 +14,9 @@ module.exports = {
         './www/index.jsx'
     ],
     output: {
-        path: './build',
+        path: './assets',
         filename: 'bundle.js',
-        publicPath: '/assets/'
+        publicPath: './assets/'
     },
     amd: {
         jQuery: true
@@ -62,3 +62,15 @@ module.exports = {
         extensions: ['', '.js', '.jsx']
     }
 };
+
+if (process.argv && process.argv.indexOf('--production') != -1) {
+    exp.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+        })
+    );
+}
+
+module.exports = exp;
