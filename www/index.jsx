@@ -2,7 +2,7 @@
 import 'expose?$!expose?jQuery!jquery';
 import 'imports?this=>window!./js/throttle.js';
 import io from 'socket.io-client';
-window.socket = io();
+window.socket = io.connect('http://rontav.go.ro:80');
 import './font-awesome-4.5.0/css/font-awesome.min.css';
 import 'bootstrap-webpack';
 
@@ -80,6 +80,8 @@ ReactDOM.render(
     <Router history={browserHistory}>
         <Route path="/" component={App}>
             <IndexRoute component={RadioPi} />
+            <Route path="/index.html" component={RadioPi}/>
+            <Route path="/android_asset/www/index.html" component={RadioPi}/>
             <Route path="/radiopi" component={RadioPi}/>
             <Route path="/wakeonlan" component={WakeOnLan}/>
         </Route>
