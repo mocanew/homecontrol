@@ -5,7 +5,7 @@ const filesArray = [
     },
     {
         base: 'www/',
-        files: ['index.html', 'index.jsx']
+        files: ['index.html']
     }];
 const dirs = ['RadioPi', 'WakeOnLan', 'build'];
 const async = require('async');
