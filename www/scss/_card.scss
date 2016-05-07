@@ -5,6 +5,7 @@ $powerPointSize: 20px;
 .card {
     position: relative;
     padding: 0 5px;
+    margin-top: 10px;
     
     .wrapper {
         box-shadow: 0 0 5px rgba($black, 0.8);
@@ -25,6 +26,7 @@ $powerPointSize: 20px;
         color: $white;
         line-height: $powerPointSize;
         text-align: center;
+        cursor: pointer;
         transition: background 0.3s, color 0.3s;
         
         .fa {
