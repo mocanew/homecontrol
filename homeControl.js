@@ -1,8 +1,8 @@
+var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('HomeControl \t');
 
-var production = !process.env.windir;//process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() == 'production';
 const dir = process.cwd();
 var io = require('socket.io');
 
@@ -13,24 +13,23 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.sendFile(dir + '/www/index'+ (production ? '' : '-debug') +'.html'));
+app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (production ? '' : '-debug') + '.html'));
 app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
 
-if (production) {
-    app.use('/assets/', express.static(dir + '/build/'));
-}
+app.use('/assets/', express.static(dir + '/assets/'));
 app.get('*', function (req, res) {
+    console.log(req);
     res.redirect('/');
 });
 
-var server = app.listen(8080, function () {
+var server = app.listen((production ? 8080 : 80), function () {
     var host = server.address().address;
     var port = server.address().port;
 
     log.info('Listening on ', host, port);
 });
 
-function messageToServer (options, callback) {
+function messageToServer(options, callback) {
     if (!options || !options.server || !options.name) {
         return;
     }
@@ -135,7 +134,7 @@ io.on('connection', function (socket) {
 });
 
 var t = 0;
-function ping () {
+function ping() {
     if (Date.now() - t < 10000) return setTimeout(ping, 100);
 
     t = Date.now();
