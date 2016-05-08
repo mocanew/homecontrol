@@ -33,6 +33,11 @@ var ssh = new SSH({
     pass: conf.password,
     baseDir: conf._HomePath
 });
+
+ssh.on('error', (e) => {
+    console.warn('SSH error:', e);
+    ssh.end();
+});
 var t = false;
 
 async.waterfall([
@@ -69,13 +74,14 @@ async.waterfall([
             });
     },
     callback => {
-        ssh.exec('ls ./ && npm install --production && sudo reboot && ~.', {
+        ssh.exec('npm run production', {
             out: console.log.bind(console),
             err: console.log.bind(console)
         }).start({
             sucess: callback,
             fail: callback
         });
+        ssh.on('error', () => callback());
     }
 ], (err) => {
     console.log(err ? err : 'Done');
