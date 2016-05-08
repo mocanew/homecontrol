@@ -4,6 +4,7 @@ const speakerPin = 11;
 const fs = require('fs');
 const lirc = require('lirc_node');
 const io = require('socket.io-client');
+var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('RadioPi \t');
@@ -32,8 +33,7 @@ var state = {
     expectedToStop: false,
     stopping: false
 };
-
-var socket = io.connect('http://localhost:8080', {
+var socket = io.connect('http://localhost:' + (production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });

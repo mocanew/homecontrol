@@ -3,6 +3,7 @@ const ips = {
 };
 const macRegex = /([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})/ig;
 
+var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('WakeOnLan \t');
@@ -12,7 +13,7 @@ const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:8080', {
+var socket = io.connect('http://localhost:' + (production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
