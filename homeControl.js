@@ -18,7 +18,6 @@ app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
 
 app.use('/assets/', express.static(dir + '/assets/'));
 app.get('*', function (req, res) {
-    console.log(req);
     res.redirect('/');
 });
 
