@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm-run-all --parallel wakeonlan radiopi homecontrol webpackDevServer",
     "build": "node build.js",
-    "production": "npm install --production && sudo killall sshd && sudo reboot",
+    "production": "npm install --production && (sudo service homecontrol restart || sudo service wakeonlan restart || sudo service radiopi restart)",
     "dev": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol webpackDevServer",
     "wakeonlan": "node WakeOnLan/index.js",
     "radiopi": "node RadioPi/index.js",
