@@ -2,6 +2,25 @@
 
 $powerPointSize: 20px;
 
+%icon {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 2;
+    height: $powerPointSize;
+    font-size: 16px;
+    line-height: $powerPointSize;
+    color: $white;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.3s, color 0.3s;
+
+    .fa {
+        text-shadow: 0 0 2px $black;
+    }
+}
+
 .wakeonlan {
     display: flex;
     padding: 0 10px 10px;
@@ -12,41 +31,58 @@ $powerPointSize: 20px;
 
 .wolCard {
     position: relative;
+    display: flex;
     min-width: 210px; // the buttons width on one line
     padding: 0 5px;
     margin-top: 10px;
     flex-grow: 1;
+    align-content: stretch;
+    align-items: stretch;
+    flex-direction: column;
 
+    &.new {
+        min-width: 320px;
+
+        .wrapper {
+            padding: 10px 10px 0;
+        }
+        .buttonsRow {
+            .materialBtn {
+                &:first-of-type {
+                    color: $main-500;
+                }
+            }
+        }
+    }
+    &:not(.new) {
+        .buttonsRow {
+            .materialBtn {
+                &:last-of-type {
+                    color: $main-500;
+                }
+            }
+        }
+    }
     .wrapper {
         display: flex;
-        height: 100%;
         overflow: hidden;
         border-radius: 2px;
         box-shadow: 0 0 5px rgba($black, 0.8);
+        flex-grow: 1;
+        flex-basis: 100%;
         flex-direction: column;
     }
     .power {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        z-index: 2;
+        @extend %icon;
+        left: 15px;
         width: $powerPointSize;
-        height: $powerPointSize;
         overflow: hidden;
-        font-size: 16px;
-        line-height: $powerPointSize;
-        color: $white;
-        text-align: center;
-        cursor: pointer;
         background: $red-500;
-        border-radius: 50%;
-        transition: background 0.3s, color 0.3s;
 
         .fa {
             opacity: 0;
             transition: opacity 0.3s;
         }
-
         &.pinging {
             background: transparent;
 
@@ -58,9 +94,18 @@ $powerPointSize: 20px;
             background: $green-500;
         }
     }
+    .trash {
+        @extend %icon;
+        right: 15px;
+
+        .fa {
+            font-size: 20px;
+        }
+    }
     .image {
         position: relative;
         width: 100%;
+        background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;
         flex-grow: 1;
@@ -102,9 +147,6 @@ $powerPointSize: 20px;
 
             &:not(:first-of-type) {
                 margin-left: 8px;
-            }
-            &:last-of-type {
-                color: $main-500;
             }
         }
     }
