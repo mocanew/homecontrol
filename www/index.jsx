@@ -2,7 +2,7 @@
 import 'expose?$!expose?jQuery!jquery';
 import 'imports?this=>window!./js/throttle.js';
 import io from 'socket.io-client';
-window.socket = io.connect('http://rontav.go.ro:80');
+window.socket = io.connect(location.protocol == 'http' || location.protocol == 'https' ? location.origin : 'http://rontav.go.ro:80');
 import './font-awesome-4.5.0/css/font-awesome.min.css';
 import 'bootstrap-webpack';
 
