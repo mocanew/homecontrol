@@ -27,7 +27,6 @@ var exp = {
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
         ],
         loaders: [
-            { test: /\.jsx?$/, exclude: /node_modules/, loader: 'react-hot' },
             {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
@@ -54,8 +53,7 @@ var exp = {
         return [autoprefixer, precss];
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.HotModuleReplacementPlugin()
     ],
     externals: {},
     resolve: {
