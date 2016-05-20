@@ -10,7 +10,8 @@ class Input extends React.Component {
             empty: true,
             name: this.props.children ? this.props.children : this.props.name,
             title: this.props.children ? this.props.children : this.props.title,
-            required: JSON.parse(this.props.required)
+            required: JSON.parse(this.props.required),
+            message: this.props.message
         };
         this.value = '';
         this.onInput = this.onInput.bind(this);
@@ -23,6 +24,13 @@ class Input extends React.Component {
             message: 'This field is required'
         };
     }
+    static defaultValidator(e, options) {
+        var empty = (e.trim().length > 0) ? false : true;
+        return {
+            empty: empty,
+            error: options && options.required && empty ? true : false
+        };
+    }
     highlightError() {
         if (!this.state.error) return;
         this.setState({
@@ -32,20 +40,27 @@ class Input extends React.Component {
             error: true
         }), 500);
     }
-    onInput() {
+    onInput(e) {
+        console.log(e);
         var input = this.refs.input.value;
         if (typeof this.props.onInput == 'function') this.props.onInput(input);
 
         if (typeof this.props.onChange == 'function' && this.value.trim() != input.trim()) this.props.onChange(input.trim());
-        var error;
+
+        var validator = Input.defaultValidator(input, {
+            required: this.state.required
+        });
         if (typeof this.props.validator == 'function') {
-            error = this.props.validator(input);
+            validator = this.props.validator(input, {
+                required: this.state.required,
+                artificial: typeof e == 'boolean' ? e : false
+            });
+        }
+        if (typeof validator.message != 'string') {
+            validator.message = this.props.message;
         }
 
-        this.setState({
-            empty: input.trim().length > 0 ? false : true,
-            error: error !== undefined ? !error : (!this.state.required || input.trim().length > 0 ? false : true)
-        });
+        this.setState(validator);
         this.value = input;
     }
     render() {
@@ -60,7 +75,7 @@ class Input extends React.Component {
                 <span className="highlight"></span>
                 <span className="bar"></span>
                 <label htmlFor="name">{this.state.title + (this.state.required ? '*' : '') }</label>
-                <div className="message">{this.props.message}</div>
+                <div className="message">{this.state.message}</div>
             </div>
         );
     }
