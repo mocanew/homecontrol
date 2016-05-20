@@ -96,12 +96,12 @@ class WakeOnLan extends React.Component {
         document.title = 'Home Control';
         return (
             <div className="wakeonlan">
+                <Card onSave={this.addCard} />
                 {
                     this.state.cards.map((e, i) => {
                         return <Card remove={this.remove} direct={e.direct} power={e.power} name={e.name} ip={e.ip} mac={e.mac} image={e.image} id={i + 1} key={'card' + i} />;
                     })
                 }
-                <Card onSave={this.addCard} />
             </div>
         );
     }
