@@ -18,13 +18,15 @@ class WakeOnLan extends React.Component {
         this.setState({
             cards: temp
         });
+        socket.emit('WakeOnLan:save', e);
     }
     response(e) {
-        if (typeof e != 'object') return;
+        if (e && e.hosts) e = e.hosts;
+        if (typeof e != 'object' || !e) return;
 
         if (e.length) {
             for (var i = 0; i < e.length; i++) {
-                this.reponse(e[i]);
+                this.response(e[i]);
             }
             return;
         }
@@ -35,62 +37,53 @@ class WakeOnLan extends React.Component {
         console.log('Wol response', e);
         var temp = this.state.cards;
 
-        for (var w = 0; w < temp.length; w++) {
-            if (temp[w].ip != e.ip && temp[w].mac != e.mac) {
-                temp[w].direct = false;
-                continue;
+        if (e.type) {
+            for (var w = 0; w < temp.length; w++) {
+                if (temp[w].ip != e.ip && temp[w].mac != e.mac) {
+                    temp[w].direct = false;
+                    continue;
+                }
+                temp[w].power = e.isAlive;
+                temp[w].direct = true;
             }
-            temp[w].power = e.isAlive;
-            temp[w].direct = true;
+        }
+        else if (e.ip || e.mac) {
+            temp.push(e);
         }
         this.setState({
             cards: temp
         });
     }
-    error(e) {
-        console.error(e);
-    }
     componentDidMount() {
         socket.on('WakeOnLan:response', this.response);
-        socket.on('WakeOnLan:error', this.error);
-        socket.emit('WakeOnLan:state');
+        socket.emit('WakeOnLan:list');
     }
     componentWillUnmount() {
         socket.off('WakeOnLan:response', this.response);
     }
     static get defaultProps() {
         return {
-            cards: [
-                {
-                    ip: '192.168.0.1',
-                    mac: 'FF:FF:FF:FF:FF:F1',
-                    image: 'http://localhost:8090/www/images/win7.jpg'
-                },
-                {
-                    ip: '192.168.1.115',
-                    image: 'http://localhost:8090/www/images/linux.png'
-                },
-                {
-                    ip: '192.168.0.102',
-                    mac: 'FF:FF:FF:FF:FF:F2',
-                    image: 'http://localhost:8090/www/images/win7.jpg'
-                }
-            ]
+            cards: []
         };
     }
     remove(e) {
-        return function () {
+        return (function () {
             console.log(e);
             var temp = this.state.cards;
 
+            socket.emit('WakeOnLan:remove', {
+                ip: e.ip,
+                mac: e.mac
+            });
             for (var w = 0; w < temp.length; w++) {
-                if (temp[w].ip != e.ip && temp[w].mac != e.mac) continue;
+                if (temp[w].ip != e.ip || temp[w].mac != e.mac) continue;
                 temp.splice(w, 1);
+                w--;
             }
             this.setState({
                 cards: temp
             });
-        }.bind(this);
+        }).bind(this);
     }
     render() {
         document.title = 'Home Control';
