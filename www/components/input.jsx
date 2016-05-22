@@ -41,7 +41,6 @@ class Input extends React.Component {
         }), 500);
     }
     onInput(e) {
-        console.log(e);
         var input = this.refs.input.value;
         if (typeof this.props.onInput == 'function') this.props.onInput(input);
 
@@ -60,8 +59,15 @@ class Input extends React.Component {
             validator.message = this.props.message;
         }
 
-        this.setState(validator);
+        this.setState({
+            empty: validator.empty,
+            error: validator.error,
+            message: validator.message
+        });
         this.value = input;
+        if (typeof validator.callback == 'function') {
+            setTimeout(validator.callback);
+        }
     }
     render() {
         var parentClasses = classNames({

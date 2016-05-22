@@ -15,6 +15,9 @@ class Card extends React.Component {
         this.ping = this.ping.bind(this);
         this.save = this.save.bind(this);
 
+        this.verifyIP = this.verifyIP.bind(this);
+        this.verifyMAC = this.verifyMAC.bind(this);
+
         this.name = this.props.name ? this.props.name : 'Computer ' + this.props.id;
     }
     static get defaultProps() {
@@ -52,7 +55,7 @@ class Card extends React.Component {
         });
     }
     save() {
-        var error = this.refs.ip.error || this.refs.mac.error;
+        var error = this.refs.ip.state.error || this.refs.mac.state.error;
         if (this.refs.ip.value.trim().length <= 0 && this.refs.mac.value.trim().length <= 0) {
             var temp = {
                 error: true
@@ -72,13 +75,32 @@ class Card extends React.Component {
             mac: this.refs.mac.value
         });
     }
-    verifyIP(e) {
-        console.log(e);
-        return false;
+    verifyIP(e, options) {
+        var ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})(.(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}$/;
+        var ipv6Regex = /^([0-9a-f]|:){1,4}(:([0-9a-f]{0,4})*){1,7}$/i;
+        var empty = Input.defaultValidator(e).empty;
+        var error = empty ? false : !(ipv4Regex.test(e) || ipv6Regex.test(e));
+        return {
+            empty: empty,
+            error: (empty && this.state.mac.length <= 0) || error,
+            message: error ? true : (empty && this.state.mac.length <= 0 ? 'Trebuie să introduceți o adresă IP sau un MAC' : false),
+            callback: () => {
+                if (!options.artificial) this.refs.mac.onInput(true);
+            }
+        };
     }
-    verifyMAC(e) {
-        console.log(e);
-        return false;
+    verifyMAC(e, options) {
+        var macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+        var empty = Input.defaultValidator(e).empty;
+        var error = empty ? false : !macRegex.test(e);
+        return {
+            empty: empty,
+            error: (empty && this.state.ip.length <= 0) || error,
+            message: error ? true : (empty && this.state.ip.length <= 0 ? 'Trebuie să introduceți o adresă IP sau un MAC' : false),
+            callback: () => {
+                if (!options.artificial) this.refs.ip.onInput(true);
+            }
+        };
     }
     render() {
         if (typeof this.props.onSave == 'function') {
@@ -86,8 +108,8 @@ class Card extends React.Component {
                 <div className="wolCard new">
                     <div className="wrapper">
                         <Input ref="name">Computer name</Input>
-                        <Input validator={this.verifyIP} message="Introduceți o adresă IP validă" ref="ip">IP</Input>
-                        <Input validator={this.verifyMAC} message="Introduceți o adresă MAC validă" ref="mac">MAC</Input>
+                        <Input validator={this.verifyIP} onChange={(e) => this.setState({ ip: e }) } message="Introduceți o adresă IP validă" ref="ip">IP</Input>
+                        <Input validator={this.verifyMAC} onChange={(e) => this.setState({ mac: e }) } message="Introduceți o adresă MAC validă" ref="mac">MAC</Input>
                         <div className="buttonsRow">
                             <MaterialButton buttonStyle="flat" onClick={this.save}>Add</MaterialButton>
                             <MaterialButton buttonStyle="flat" onClick={this.ping}>Ping</MaterialButton>
@@ -109,7 +131,7 @@ class Card extends React.Component {
         return (
             <div className="wolCard">
                 <div className="wrapper">
-                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props) }><i className="fa fa-trash-o fa-fw"></i></div>
+                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props)}><i className="fa fa-trash-o fa-fw"></i></div>
                     <div title={this.state.power === true ? 'Pornit' : this.state.power === false ? 'Oprit' : ''} className={power} onClick={this.ping}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                     <div className="image" style={imageStyle}></div>
                     <div className="titleRow">
