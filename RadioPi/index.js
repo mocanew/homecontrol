@@ -128,7 +128,7 @@ function startup() {
     socket.on('Radio:stop', stopRadio);
     socket.on('Radio:volume', changeVolume);
     socket.on('Radio:toggle', toggleRadio);
-    socket.on('Radio:state', () => {
+    socket.on('Radio:state:request', () => {
         socket.emit('Radio:state', state);
         socket.emit('Radio:stations', stations);
     });

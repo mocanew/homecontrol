@@ -14,9 +14,9 @@ var exp = {
         './www/index.jsx'
     ],
     output: {
-        path: './assets/',
+        path: '/assets/',
         filename: 'bundle.js',
-        publicPath: './assets/'
+        publicPath: '/assets/'
     },
     amd: {
         jQuery: true

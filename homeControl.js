@@ -3,6 +3,7 @@ const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('HomeControl \t');
 
+const async = require('async');
 const dir = process.cwd();
 var io = require('socket.io');
 
@@ -45,11 +46,28 @@ function messageToServer(options, callback) {
         callback();
     }
 }
+function redirect(servers, socket) {
+    async.forEachOf(servers, (value, server) => {
+        async.each(value, (event) => {
+            socket.on(event, (e) => {
+                if (socket.name) return;
+
+                messageToServer({
+                    server: server,
+                    name: event,
+                    data: e
+                });
+            });
+        });
+    });
+}
+var redirects = {
+    'WakeOnLan': ['WakeOnLan', 'WakeOnLan:list', 'WakeOnLan:ping', 'WakeOnLan:save', 'WakeOnLan:remove'],
+    'Radio': ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request']
+};
 io = io(server);
 var clients = {};
 var servers = {};
-
-var wolCache = {};
 
 io.on('connection', function (socket) {
     clients[socket.id] = socket;
@@ -73,75 +91,12 @@ io.on('connection', function (socket) {
         socket.join('servers');
         socket.leave('clients');
 
-        ping();
-    });
-
-    socket.on('WakeOnLan', (e) => messageToServer({
-        server: 'WakeOnLan',
-        name: 'wol',
-        data: e
-    }));
-    socket.on('WakeOnLan:list', () => messageToServer({
-        server: 'WakeOnLan',
-        name: 'list'
-    }));
-    socket.on('WakeOnLan:check', (e) => messageToServer({
-        server: 'WakeOnLan',
-        name: 'check',
-        data: e
-    }));
-    socket.on('WakeOnLan:response', (e) => {
-        wolCache[e.mac] = e.isAlive;
-        io.to('clients').emit('WakeOnLan:response', e);
-    });
-
-    socket.on('Radio:start', (e) => messageToServer({
-        server: 'Radio',
-        name: 'Radio:start',
-        data: e
-    }));
-    socket.on('Radio:stop', () => messageToServer({
-        server: 'Radio',
-        name: 'Radio:stop'
-    }));
-    socket.on('Radio:prev', () => messageToServer({
-        server: 'Radio',
-        name: 'Radio:prev'
-    }));
-    socket.on('Radio:next', () => messageToServer({
-        server: 'Radio',
-        name: 'Radio:next'
-    }));
-    socket.on('Radio:toggle', (e) => messageToServer({
-        server: 'Radio',
-        name: 'Radio:toggle',
-        data: e
-    }));
-    socket.on('Radio:volume', (e) => messageToServer({
-        server: 'Radio',
-        name: 'Radio:volume',
-        data: e
-    }));
-    socket.on('Radio:state:request', () => {
-        messageToServer({
-            server: 'Radio',
-            name: 'Radio:state'
+        socket.on('WakeOnLan:response', (e) => {
+            io.to('clients').emit('WakeOnLan:response', e);
         });
+
+        socket.on('Radio:state', (e) => io.to('clients').emit('Radio:state', e));
+        socket.on('Radio:stations', (e) => io.to('clients').emit('Radio:stations', e));
     });
-    socket.on('Radio:state', (e) => io.to('clients').emit('Radio:state', e));
-    socket.on('Radio:stations', (e) => io.to('clients').emit('Radio:stations', e));
+    redirect(redirects, socket);
 });
-
-var t = 0;
-function ping() {
-    if (Date.now() - t < 10000) return setTimeout(ping, 100);
-
-    t = Date.now();
-    messageToServer({
-        server: 'WakeOnLan',
-        name: 'check',
-        data: {
-            mac: '00:25:22:E7:EC:24'
-        }
-    }, ping);
-}

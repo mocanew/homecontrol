@@ -1,6 +1,22 @@
-const ips = {
-    '00:25:22:E7:EC:24': '192.168.0.100'
-};
+const dir = process.env.windir ? './WakeOnLan' : '/home/node/homecontrol/WakeOnLan';
+const fs = require('fs');
+
+var hosts;
+
+try {
+    hosts = JSON.parse(fs.readFileSync(dir + '/hosts.json'));
+}
+catch (e) {
+    hosts = [];
+}
+
+function updateJSON() {
+    fs.writeFile(dir + '/hosts.json', JSON.stringify(hosts), (err) => {
+        if (err) {
+            return log.error(err);
+        }
+    });
+}
 const macRegex = /([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})/ig;
 
 var production = !process.env.windir;
@@ -21,15 +37,50 @@ socket.on('connect', () => {
     log.debug('Connected to homeControl');
     socket.emit('setServerName', 'WakeOnLan');
 });
-socket.on('list', () => {
+socket.on('WakeOnLan:save', (e) => {
+    if (!e || (!e.mac && !e.ip)) return;
+    if (!e.name || e.name.length <= 0) {
+        e.name = 'Computer ' + hosts.length;
+    }
+    if (!e.ip) {
+        searchHost(e, (err, ip) => {
+            e.ip = ip;
+            hosts.push(e);
+            log.debug(hosts);
+            updateJSON();
+        });
+    }
+    if (!e.mac) {
+        searchHost(e, (err, mac) => {
+            e.mac = mac;
+            hosts.push(e);
+            log.debug(hosts);
+            updateJSON();
+        });
+    }
+});
+socket.on('WakeOnLan:remove', (e) => {
+    log.debug(hosts);
+    for (var i = 0; i < hosts.length; i++) {
+        var item = hosts[i];
+        if (!item || (item.mac == e.mac && item.ip == e.ip)) {
+            hosts.splice(i, 1);
+            i--;
+        }
+    }
+    log.debug(hosts);
+    updateJSON();
+});
+socket.on('WakeOnLan:list', () => {
     socket.emit('WakeOnLan:response', {
         type: 'list',
-        ips: ips
+        hosts: hosts
     });
 });
-socket.on('wol', (e) => {
+socket.on('WakeOnLan', (e) => {
     log.debug(e);
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
+    e.ip = undefined;
     if (!e || !e.mac || !e.mac.match(macRegex)) return;
 
     async.waterfall([
@@ -39,9 +90,9 @@ socket.on('wol', (e) => {
             });
         },
         (callback) => {
-            if (!ips[e.mac]) return searchHost(e.mac, callback);
+            if (!hosts[e.mac]) return searchHost(e, callback);
 
-            callback(null, ips[e.mac]);
+            callback(null, hosts[e.mac]);
         },
         ping
     ], (err, result) => {
@@ -61,16 +112,16 @@ socket.on('wol', (e) => {
         });
     });
 });
-socket.on('check', (e) => {
+socket.on('WakeOnLan:ping', (e) => {
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
     e.ip = e.ip ? e.ip.trim() : '';
     if (!e || ((!e.mac || !e.mac.match(macRegex)) && !e.ip)) return;
 
     async.waterfall([
         (callback) => {
-            var ip = e.ip ? e.ip : ips[e.mac];
-            if (!e.mac && !ip) return searchHost(e.mac, callback);
-            callback(null, ip);
+            e.ip = e.ip ? e.ip : hosts[e.mac];
+            if (!e.mac && !e.ip) return searchHost(e, callback);
+            callback(null, e.ip);
         },
         ping
     ], (err, result) => {
@@ -85,8 +136,11 @@ socket.on('check', (e) => {
     });
 });
 
-function searchHost (mac, callback) {
-    log.debug('Unknown mac address,', mac);
+function searchHost(options, callback) {
+    if (!options.mac && !options.ip) return callback(true);
+    options.mac = options.mac && options.mac.length > 0 ? options.mac : undefined;
+    options.ip = options.ip && options.ip.length > 0 ? options.ip : undefined;
+
     var callbackSent = false;
     arpscanner((err, res) => {
         if (err || !res) {
@@ -98,11 +152,12 @@ function searchHost (mac, callback) {
         }
 
         for (var i = 0; i < res.length; i++) {
-            if (res[i].mac == mac) return callback(null, res[i].ip);
+            if (options.mac && res[i].mac == options.mac) return callback(null, res[i].ip);
+            if (options.ip && res[i].mac == options.ip) return callback(null, res[i].mac);
         }
     });
 }
-function ping (ip, callback) {
+function ping(ip, callback) {
     if (!ip) return callback('Ping received empty ip address');
 
     Ping.promise.probe(ip, {
