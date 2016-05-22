@@ -2,3 +2,4 @@
 /assets/
 /radiopi.apk
 /sftp.json
+*.keystore
