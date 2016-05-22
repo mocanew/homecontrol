@@ -17,7 +17,7 @@
     "lint": "eslint RadioPi/*.js WakeOnLan/*.js www/**/*.js www/**/*.jsx",
     "webpackDevServer": "webpack-dev-server --colors --progress --inline",
     "watch:homecontrol": "nodemon --quiet --watch homeControl.js -x \"npm run homecontrol\"",
-    "watch:wakeonlan": "nodemon --quiet --watch WakeOnLan/ -x \"npm run wakeonlan\"",
+    "watch:wakeonlan": "nodemon --quiet --watch WakeOnLan/index.js -x \"npm run wakeonlan\"",
     "watch:radiopi": "nodemon --quiet --watch RadioPi/ -x \"npm run radiopi\"",
     "watch:scsslint": "nodemon --quiet --watch www/scss/*.* -x \"npm run scsslint\""
   },
