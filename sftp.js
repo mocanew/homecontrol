@@ -22,68 +22,44 @@ var conf = {
     host: 'rontav.go.ro',
     username: secure.username,
     password: secure.password,
-    _HomePath: '/home/node/homecontrol/'
+    baseDir: '/home/node/homecontrol/'
 };
 
-var SSH = require('simple-ssh');
-
-var ssh = new SSH({
-    host: conf.host,
-    user: conf.username,
-    pass: conf.password,
-    baseDir: conf._HomePath
-});
-
-ssh.on('error', (e) => {
-    console.warn('SSH error:', e);
-    ssh.end();
-});
-var t = false;
+var ssh = require('ssh2').Client();
+var Client = require('scp2').Client;
+var client = new Client(conf);
 
 async.waterfall([
-    callback => ssh.exec('[ -d www ] || mkdir www', {
-        out: console.log.bind(console),
-        err: console.log.bind(console),
-        exit: () => {
-            if (t) return;
-            callback();
-            t = true;
-        }
-    }).start({
-        sucess: callback,
-        fail: callback
-    }),
+    callback => client.mkdir(conf.baseDir + 'www', callback),
     callback => {
         console.log('done mkdir');
-        var Client = require('scp2').Client;
-        var client = new Client(conf);
 
-        async.eachSeries(filesArray, (files, cbb) => async.eachSeries(files.files, (file, cb) => client.upload(files.base + file, conf._HomePath + files.base, cb), cbb),
+        async.eachSeries(filesArray, (files, cbb) => async.eachSeries(files.files, (file, cb) => client.upload(files.base + file, conf.baseDir + files.base, cb), cbb),
             (err) => {
                 console.log(err ? err : 'Files uploaded');
                 callback(err);
             });
     },
     callback => {
-        var client = require('scp2');
+        var highClient = require('scp2');
 
-        async.eachSeries(dirs, (dir, cb) => client.scp(dir, conf.username + ':' + conf.password + '@' + conf.host + ':' + conf._HomePath + dir, cb),
+        async.eachSeries(dirs, (dir, cb) => highClient.scp(dir, conf.username + ':' + conf.password + '@' + conf.host + ':' + conf.baseDir + dir, cb),
             (err) => {
                 console.log(err ? err : 'Folders uploaded');
                 callback(err);
             });
     },
     callback => {
-        ssh.exec('npm run production', {
-            out: console.log.bind(console),
-            err: console.log.bind(console)
-        }).start({
-            sucess: callback,
-            fail: callback
-        });
-        ssh.on('error', () => callback());
+        ssh.on('ready', () => {
+            ssh.exec(`cd ${conf.baseDir} && npm run production`, (err, stream) => {
+                stream.on('close', () => callback());
+                stream.on('data', data => console.log(data.toString()));
+                stream.stderr.on('data', data => console.log(data.toString()));
+            });
+        }).connect(conf);
     }
 ], (err) => {
+    ssh.end();
     console.log(err ? err : 'Done');
     process.exit(err ? 1 : 0);
 });
