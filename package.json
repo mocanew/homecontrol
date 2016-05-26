@@ -6,7 +6,8 @@
   "scripts": {
     "storybook": "start-storybook -p 9001",
     "start": "npm-run-all --parallel wakeonlan radiopi homecontrol webpackDevServer",
-    "build": "node build.js",
+    "build": "node build.js --webpack",
+    "build:android": "node build.js --webpack --android --install",
     "production": "npm install --production --progress=false && (screen -dm sudo service homecontrol restart && screen -dm sudo service wakeonlan restart && screen -dm sudo service radiopi restart)",
     "dev": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol watch:scsslint webpackDevServer",
     "devww": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol watch:scsslint",
