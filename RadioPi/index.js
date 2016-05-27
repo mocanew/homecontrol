@@ -94,7 +94,7 @@ function startup() {
         lirc.init();
         lirc.addListener((data) => {
             if (!data || !data.key || !data.repeat) return;
-            if (Date.now() - t < 500 && throttleExceptions.indexOf(data.key) == -1) return;
+            if (Date.now() - t < 100 && throttleExceptions.indexOf(data.key) == -1) return;
             t = Date.now();
 
             switch (data.key) {
@@ -202,7 +202,7 @@ function toggleRadio() {
 
 function changeVolume(mode) {
     if (typeof mode == 'string') {
-        state.volume += 5 * (mode == '+' ? 1 : -1);
+        state.volume += 1 * (mode == '+' ? 1 : -1);
     }
     else if (typeof mode == 'number') {
         state.volume = mode;
