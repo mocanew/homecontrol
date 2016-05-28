@@ -94,7 +94,7 @@ function startup() {
         lirc.init();
         lirc.addListener((data) => {
             if (!data || !data.key || !data.repeat) return;
-            if (Date.now() - t < 200 && throttleExceptions.indexOf(data.key) == -1) return;
+            if (Date.now() - t < 500 && throttleExceptions.indexOf(data.key) == -1) return;
             t = Date.now();
 
             switch (data.key) {
