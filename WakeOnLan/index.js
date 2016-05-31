@@ -11,6 +11,10 @@ catch (e) {
 }
 
 function updateJSON() {
+    socket.emit('WakeOnLan:response', {
+        type: 'list',
+        hosts: hosts
+    });
     fs.writeFile(dir + '/hosts.json', JSON.stringify(hosts), (err) => {
         if (err) {
             return log.error(err);
@@ -40,7 +44,7 @@ socket.on('connect', () => {
 socket.on('WakeOnLan:save', (e) => {
     if (!e || (!e.mac && !e.ip)) return;
     if (!e.name || e.name.length <= 0) {
-        e.name = 'Computer ' + hosts.length;
+        e.name = 'Computer ' + (hosts.length + 1);
     }
     if (!e.ip) {
         searchHost(e, (err, ip) => {

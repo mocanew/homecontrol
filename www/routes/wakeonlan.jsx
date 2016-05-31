@@ -14,6 +14,14 @@ class WakeOnLan extends React.Component {
     }
     addCard(e) {
         var temp = this.state.cards;
+        var ok = true;
+        for (var u = 0; u < temp.length; u++) {
+            if ((temp[u].ip && temp[u].ip == e.ip) || (temp[u].mac && temp[u].mac == e.mac)) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) return;
         temp.push(e);
         this.setState({
             cards: temp
@@ -24,7 +32,10 @@ class WakeOnLan extends React.Component {
         if (e && e.hosts) e = e.hosts;
         if (typeof e != 'object' || !e) return;
 
-        if (e.length) {
+        if (e.length !== undefined) {
+            this.setState({
+                cards: []
+            });
             for (var i = 0; i < e.length; i++) {
                 this.response(e[i]);
             }
@@ -48,7 +59,18 @@ class WakeOnLan extends React.Component {
             }
         }
         else if (e.ip || e.mac) {
-            temp.push(e);
+            if (temp.length <= 0) temp.push(e);
+            else {
+                var ok = true;
+                for (var u = 0; u < temp.length; u++) {
+                    if ((temp[u].ip && temp[u].ip == e.ip) || (temp[u].mac && temp[u].mac == e.mac)) {
+                        ok = false;
+                        break;
+                    }
+                }
+
+                if (ok) temp.push(e);
+            }
         }
         this.setState({
             cards: temp
@@ -76,6 +98,7 @@ class WakeOnLan extends React.Component {
                 mac: e.mac
             });
             for (var w = 0; w < temp.length; w++) {
+                console.log(temp[w].ip, e.ip, temp[w].mac, e.mac);
                 if (temp[w].ip != e.ip || temp[w].mac != e.mac) continue;
                 temp.splice(w, 1);
                 w--;
