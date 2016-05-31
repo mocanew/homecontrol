@@ -22,7 +22,7 @@ app.get('*', function (req, res) {
     res.redirect('/');
 });
 
-var server = app.listen((production ? 8080 : 80), function () {
+var server = app.listen((process.env.PORT ? process.env.PORT : production ? 8080 : 80), function () {
     var host = server.address().address;
     var port = server.address().port;
 

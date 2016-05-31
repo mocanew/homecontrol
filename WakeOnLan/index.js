@@ -29,7 +29,7 @@ const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:' + (production ? '8080' : '80'), {
+var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });

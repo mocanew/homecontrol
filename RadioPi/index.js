@@ -13,6 +13,7 @@ const MPlayer = require('mplayer');
 var gpio, player;
 try {
     gpio = require('rpi-gpio');
+    if (typeof process.env.nogpio != 'undefined') throw 'No GPIO';
 }
 catch (er) {
     gpio = null;
@@ -33,7 +34,7 @@ var state = {
     expectedToStop: false,
     stopping: false
 };
-var socket = io.connect('http://localhost:' + (production ? '8080' : '80'), {
+var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
