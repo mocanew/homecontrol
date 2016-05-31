@@ -54,7 +54,7 @@ class Header extends React.Component {
                         Home Control
                     </Link>
                     <div className="links">
-                        <Link to="/radiopi">Radio Pi</Link>
+                        <Link to="/">Radio Pi</Link>
                         <Link to="/wakeonlan">Wake on Lan</Link>
                     </div>
                 </nav>
