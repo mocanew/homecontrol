@@ -32,15 +32,18 @@ const async = require('async');
 const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
+
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:' + (production ? '8080' : '80'), {
+var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
+
 socket.on('connect', () => {
     log.debug('Connected to homeControl');
     socket.emit('setServerName', 'WakeOnLan');
 });
+
 socket.on('WakeOnLan:save', (e) => {
     if (!e || (!e.mac && !e.ip)) return;
     if (!e.name || e.name.length <= 0) {
@@ -63,6 +66,7 @@ socket.on('WakeOnLan:save', (e) => {
         });
     }
 });
+
 socket.on('WakeOnLan:remove', (e) => {
     log.debug(hosts);
     for (var i = 0; i < hosts.length; i++) {
@@ -75,12 +79,14 @@ socket.on('WakeOnLan:remove', (e) => {
     log.debug(hosts);
     updateJSON();
 });
+
 socket.on('WakeOnLan:list', () => {
     socket.emit('WakeOnLan:response', {
         type: 'list',
         hosts: hosts
     });
 });
+
 socket.on('WakeOnLan', (e) => {
     log.debug(e);
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
@@ -116,6 +122,7 @@ socket.on('WakeOnLan', (e) => {
         });
     });
 });
+
 socket.on('WakeOnLan:ping', (e) => {
     e.mac = e.mac ? e.mac.trim().replace(/\.|\-/ig, ':') : '';
     e.ip = e.ip ? e.ip.trim() : '';
@@ -161,6 +168,7 @@ function searchHost(options, callback) {
         }
     });
 }
+
 function ping(ip, callback) {
     if (!ip) return callback('Ping received empty ip address');
 
