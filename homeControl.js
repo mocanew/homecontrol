@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (production ? '' : '-debug') + '.html'));
 app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
 
+app.use('/images/', express.static(dir + '/www/images/'));
 app.use('/assets/', express.static(dir + '/assets/'));
 app.get('*', function (req, res) {
     res.redirect('/');
