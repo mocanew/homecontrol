@@ -95,6 +95,9 @@ io.on('connection', function (socket) {
         socket.on('WakeOnLan:response', (e) => {
             io.to('clients').emit('WakeOnLan:response', e);
         });
+        socket.on('WakeOnLan:listResponse', (e) => {
+            io.to('clients').emit('WakeOnLan:listResponse', e);
+        });
 
         socket.on('Radio:state', (e) => io.to('clients').emit('Radio:state', e));
         socket.on('Radio:stations', (e) => io.to('clients').emit('Radio:stations', e));
