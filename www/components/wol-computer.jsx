@@ -18,6 +18,8 @@ class Card extends React.Component {
         this.verifyIP = this.verifyIP.bind(this);
         this.verifyMAC = this.verifyMAC.bind(this);
 
+        this.response = this.response.bind(this);
+
         this.name = this.props.name ? this.props.name : 'Computer ' + this.props.id;
     }
     static get defaultProps() {
@@ -26,8 +28,22 @@ class Card extends React.Component {
             name: '',
             ip: '',
             mac: '',
-            image: '/images/general.jpg'
+            image: '/images/general.png'
         };
+    }
+    response(e) {
+        if ((e.ip && e.ip == this.state.ip) || (e.mac && e.mac == this.state.mac)) {
+            this.setState({
+                power: e.isAlive
+            });
+        }
+    }
+    componentDidMount() {
+        socket.on('WakeOnLan:response', this.response);
+        this.ping();
+    }
+    componentWillUnmount() {
+        socket.off('WakeOnLan:response', this.response);
     }
     componentWillReceiveProps(nextProps) {
         if (!nextProps.direct && nextProps.power == this.props.power) return;
@@ -68,6 +84,10 @@ class Card extends React.Component {
         this.refs.mac.state.error ? this.refs.mac.highlightError() : true;
 
         if (error) return;
+
+        this.refs.name.clear();
+        this.refs.ip.clear();
+        this.refs.mac.clear();
 
         this.props.onSave({
             name: this.refs.name.value,
@@ -131,7 +151,7 @@ class Card extends React.Component {
         return (
             <div className="wolCard">
                 <div className="wrapper">
-                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props)}><i className="fa fa-trash-o fa-fw"></i></div>
+                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props) }><i className="fa fa-trash-o fa-fw"></i></div>
                     <div title={this.state.power === true ? 'Pornit' : this.state.power === false ? 'Oprit' : ''} className={power} onClick={this.ping}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                     <div className="image" style={imageStyle}></div>
                     <div className="titleRow">
@@ -150,8 +170,14 @@ class Card extends React.Component {
 Card.propTypes = {
     id: React.PropTypes.number,
     name: React.PropTypes.string,
-    ip: React.PropTypes.string,
-    mac: React.PropTypes.string,
+    ip: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.bool
+    ]),
+    mac: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.bool
+    ]),
     image: React.PropTypes.string,
     power: React.PropTypes.bool,
     onSave: React.PropTypes.func,

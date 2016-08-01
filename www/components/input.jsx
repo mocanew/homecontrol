@@ -69,6 +69,9 @@ class Input extends React.Component {
             setTimeout(validator.callback);
         }
     }
+    clear() {
+        this.refs.input.value = '';
+    }
     render() {
         var parentClasses = classNames({
             materialInput: true,

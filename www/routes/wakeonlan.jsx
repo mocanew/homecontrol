@@ -8,7 +8,7 @@ class WakeOnLan extends React.Component {
         this.state = {
             cards: this.props.cards
         };
-        this.response = this.response.bind(this);
+        this.list = this.list.bind(this);
         this.addCard = this.addCard.bind(this);
         this.remove = this.remove.bind(this);
     }
@@ -16,6 +16,7 @@ class WakeOnLan extends React.Component {
         var temp = this.state.cards;
         var ok = true;
         for (var u = 0; u < temp.length; u++) {
+            temp[u].mac = temp[u].mac && temp[u].mac.length ? temp[u].mac.toUpperCase() : temp[u].mac;
             if ((temp[u].ip && temp[u].ip == e.ip) || (temp[u].mac && temp[u].mac == e.mac)) {
                 ok = false;
                 break;
@@ -28,60 +29,17 @@ class WakeOnLan extends React.Component {
         });
         socket.emit('WakeOnLan:save', e);
     }
-    response(e) {
-        if (e && e.hosts) e = e.hosts;
-        if (typeof e != 'object' || !e) return;
-
-        if (e.length !== undefined) {
-            this.setState({
-                cards: []
-            });
-            for (var i = 0; i < e.length; i++) {
-                this.response(e[i]);
-            }
-            return;
-        }
-
-        e.ip = e.ip && e.ip.length ? e.ip : undefined;
-        e.mac = e.mac && e.mac.length ? e.mac : undefined;
-
-        console.log('Wol response', e);
-        var temp = this.state.cards;
-
-        if (e.type) {
-            for (var w = 0; w < temp.length; w++) {
-                if (temp[w].ip != e.ip && temp[w].mac != e.mac) {
-                    temp[w].direct = false;
-                    continue;
-                }
-                temp[w].power = e.isAlive;
-                temp[w].direct = true;
-            }
-        }
-        else if (e.ip || e.mac) {
-            if (temp.length <= 0) temp.push(e);
-            else {
-                var ok = true;
-                for (var u = 0; u < temp.length; u++) {
-                    if ((temp[u].ip && temp[u].ip == e.ip) || (temp[u].mac && temp[u].mac == e.mac)) {
-                        ok = false;
-                        break;
-                    }
-                }
-
-                if (ok) temp.push(e);
-            }
-        }
+    list(e) {
         this.setState({
-            cards: temp
+            cards: e.hosts
         });
     }
     componentDidMount() {
-        socket.on('WakeOnLan:response', this.response);
+        socket.on('WakeOnLan:listResponse', this.list);
         socket.emit('WakeOnLan:list');
     }
     componentWillUnmount() {
-        socket.off('WakeOnLan:response', this.response);
+        socket.off('WakeOnLan:listResponse', this.list);
     }
     static get defaultProps() {
         return {
