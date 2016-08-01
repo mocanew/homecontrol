@@ -11,7 +11,7 @@ catch (e) {
 }
 
 function updateJSON() {
-    socket.emit('WakeOnLan:response', {
+    socket.emit('WakeOnLan:listResponse', {
         type: 'list',
         hosts: hosts
     });
@@ -49,6 +49,7 @@ socket.on('WakeOnLan:save', (e) => {
     if (!e.name || e.name.length <= 0) {
         e.name = 'Computer ' + (hosts.length + 1);
     }
+    e.mac= e.mac.toUpperCase();
     if (!e.ip) {
         searchHost(e, (err, ip) => {
             e.ip = ip;
@@ -57,13 +58,18 @@ socket.on('WakeOnLan:save', (e) => {
             updateJSON();
         });
     }
-    if (!e.mac) {
+    else if (!e.mac) {
         searchHost(e, (err, mac) => {
             e.mac = mac;
             hosts.push(e);
             log.debug(hosts);
             updateJSON();
         });
+    }
+    else {
+        hosts.push(e);
+        log.debug(hosts);
+        updateJSON();
     }
 });
 
@@ -81,7 +87,7 @@ socket.on('WakeOnLan:remove', (e) => {
 });
 
 socket.on('WakeOnLan:list', () => {
-    socket.emit('WakeOnLan:response', {
+    socket.emit('WakeOnLan:listResponse', {
         type: 'list',
         hosts: hosts
     });
