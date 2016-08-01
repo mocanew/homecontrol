@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
 var precss = require('precss');
+var path = require('path');
 
 var exp = {
     devServer: {
@@ -10,12 +11,14 @@ var exp = {
             index: '/'
         }
     },
-    entry: [
-        './www/index.jsx'
-    ],
+    entry: {
+        webpack: 'webpack-dev-server/client?http://0.0.0.0:8090',
+        webpackHot: 'webpack/hot/only-dev-server',
+        bundle: './www/index.jsx'
+    },
     output: {
-        path: './assets/',
-        filename: 'bundle.js',
+        path: path.join(__dirname, 'assets'),
+        filename: '[name].js',
         publicPath: '/assets/'
     },
     amd: {
@@ -45,7 +48,7 @@ var exp = {
             { test: /\.css$/, loaders: ['style', 'css', 'postcss'] },
             {
                 test: /\.(eot|svg|ttf|woff(2)?)(\?v=\d+\.\d+\.\d+)?/,
-                loader: 'file'
+                loader: 'file-loader'
             }
         ]
     },
