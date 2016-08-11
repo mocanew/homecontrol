@@ -32,11 +32,9 @@ class RadioPi extends React.Component {
         socket.emit('Radio:next');
     }
     stateUpdate(e) {
-        console.log(e);
         this.setState(e);
     }
     stationUpdate(e) {
-        console.log(e);
         this.setState({
             stations: e
         });
@@ -53,9 +51,6 @@ class RadioPi extends React.Component {
         socket.off('Radio:state', this.stateUpdate);
         socket.off('Radio:stations', this.stationUpdate);
     }
-    changeVolume(e) {
-        console.log(e);
-    }
     render() {
         var stations = this.state.stations.map((e, index) => {
             var classes = classNames({
@@ -69,6 +64,10 @@ class RadioPi extends React.Component {
             pause: this.state.playing,
             play: !this.state.playing
         });
+        var titleClasses = classNames({
+            radioTitle: true,
+            empty: !this.state.title || this.state.title.length == 0
+        });
         return (
             <div className="radiopi">
                 <div className="stations">
@@ -77,6 +76,11 @@ class RadioPi extends React.Component {
                     }
                 </div>
                 <div className="controls">
+                    <div className={titleClasses}>
+                        {
+                            this.state.title ? this.state.title : ''
+                        }
+                    </div>
                     <RangeSlider />
                     <MaterialButton buttonStyle="flat iconBtn leftArrow" onClick={this.prev} ></MaterialButton>
                     <MaterialButton buttonStyle="flat iconBtn" classes={toggleClasses} onClick={this.toggle} ref="toggle" ></MaterialButton>

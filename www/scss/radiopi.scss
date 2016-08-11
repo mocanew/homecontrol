@@ -50,6 +50,23 @@
     background: $main-600;
     transition: left 0.5s, width 0.5s;
 
+    .radioTitle {
+        position: absolute;
+        top: -40px;
+        width: 100%;
+        height: 40px;
+        font-size: 24px;
+        line-height: 40px;
+        color: $white;
+        text-align: center;
+        background: $main-600;
+        transition: height 0.5s, top 0.5s;
+
+        &.empty {
+            top: 0;
+            height: 0;
+        }
+    }
     .iconBtn {
         display: inline-block;
         height: 100%;

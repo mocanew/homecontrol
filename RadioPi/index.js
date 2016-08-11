@@ -87,9 +87,11 @@ function startup() {
             sendState(false);
             log.info('Start radio', state.stations[state.lastPlayed].name);
         });
-        // player.on('status', () => {
-        //     log.debug('MPlayer status:', player.status, ', our state:', state);
-        // });
+        player.on('status', () => {
+            log.debug('MPlayer status:', player.status);
+            state.title = player.status.title;
+            sendState(false);
+        });
     }
 
     if (gpio && tvRemote) {
@@ -133,12 +135,11 @@ function startup() {
     socket.on('Radio:volume', changeVolume);
     socket.on('Radio:toggle', toggleRadio);
     socket.on('Radio:add', (e) => {
-        console.log('add', e);
         e = _.pick(e, ['name', 'url']);
         if (!e.name || !e.url) return;
+
         var station = new RadioModel(e);
         station.save((err) => {
-            console.log('saved');
             if (err) log.error('DB Save error:', err);
             sendState();
         });
@@ -193,7 +194,6 @@ function startRadio(station) {
     url = !url ? state.stations[state.lastPlayed].url : url;
 
     var index = _.findIndex(state.stations, e => e.url == url);
-    console.log(url, index, state.stations);
     if (index == -1) return log.warn('Radio was given a foreign stream url');
 
     station = state.stations[index];
@@ -205,6 +205,7 @@ function startRadio(station) {
     state.lastPlayed = index;
     if (player) {
         player.openFile(url);
+        setTimeout(() => player.volume(state.volume));
     }
 }
 
