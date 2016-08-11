@@ -64,7 +64,7 @@ function redirect(servers, socket) {
 }
 var redirects = {
     'WakeOnLan': ['WakeOnLan', 'WakeOnLan:list', 'WakeOnLan:ping', 'WakeOnLan:save', 'WakeOnLan:remove'],
-    'Radio': ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request']
+    'Radio': ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request', 'Radio:add', 'Radio:remove']
 };
 io = io(server);
 var clients = {};

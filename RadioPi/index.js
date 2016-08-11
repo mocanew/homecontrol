@@ -1,7 +1,5 @@
-const dir = process.env.windir ? './RadioPi' : '/home/node/homecontrol/RadioPi';
 const tvRemote = true;
 const speakerPin = 11;
-const fs = require('fs');
 const lirc = require('lirc_node');
 const io = require('socket.io-client');
 var production = !process.env.windir;
@@ -9,6 +7,8 @@ const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('RadioPi \t');
 const MPlayer = require('mplayer');
+const async = require('async');
+const _ = require('lodash');
 
 var gpio, player;
 try {
@@ -24,9 +24,6 @@ try {
 catch (er) {
     player = null;
 }
-
-var stations = JSON.parse(fs.readFileSync(dir + '/radioStations.json'));
-
 var state = {
     lastPlayed: 0,
     playing: false,
@@ -34,7 +31,9 @@ var state = {
     expectedToStop: false,
     stopping: false
 };
-var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
+var RadioModel;
+
+socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
@@ -43,12 +42,32 @@ socket.on('connect', () => {
     socket.emit('setServerName', 'Radio');
 });
 
-if (gpio) {
-    gpio.setup(speakerPin, gpio.DIR_OUT, startup);
-}
-else {
-    startup();
-}
+async.waterfall([
+    (callback) => {
+        var mongoose = require('mongoose');
+        mongoose.connect('mongodb://localhost/HomeControl');
+
+        var db = mongoose.connection;
+        db.on('error', e => log.error('DB ERROR:', e));
+        db.once('open', function () {
+            var radioSchema = mongoose.Schema({
+                name: String,
+                url: String
+            });
+            RadioModel = mongoose.model('RadioStation', radioSchema);
+            callback();
+        });
+    },
+    () => {
+        if (gpio) {
+            gpio.setup(speakerPin, gpio.DIR_OUT, startup);
+        }
+        else {
+            startup();
+        }
+    }
+]);
+
 function startup() {
     if (player) {
         player.on('stop', () => {
@@ -58,36 +77,20 @@ function startup() {
             }
 
             updateGPIO(speakerPin, false);
-            socket.emit('Radio:state', state);
+            sendState(false);
             log.info('Mplayer stopped');
             log.debug(state);
         });
         player.on('start', () => {
             updateGPIO(speakerPin, true);
 
-            socket.emit('Radio:state', state);
-            log.info('Start radio', stations[state.lastPlayed].name);
+            sendState(false);
+            log.info('Start radio', state.lastPlayed.name);
         });
-        player.on('status', () => {
-            log.debug(player.status);
-        });
+        // player.on('status', () => {
+        //     log.debug('MPlayer status:', player.status, ', our state:', state);
+        // });
     }
-
-    fs.watch(dir + '/radioStations.json', () => {
-        var newFile = fs.readFileSync(dir + '/radioStations.json');
-
-        if (!newFile) return;
-
-        var temp;
-        try {
-            temp = JSON.parse(newFile);
-        }
-        catch (e) {
-            return log.error(e);
-        }
-        stations = temp;
-        log.info('RadioStations updated');
-    });
 
     if (gpio && tvRemote) {
         var t = Date.now();
@@ -129,15 +132,35 @@ function startup() {
     socket.on('Radio:stop', stopRadio);
     socket.on('Radio:volume', changeVolume);
     socket.on('Radio:toggle', toggleRadio);
-    socket.on('Radio:state:request', () => {
-        socket.emit('Radio:state', state);
-        socket.emit('Radio:stations', stations);
+    socket.on('Radio:add', (e) => {
+        console.log('add', e);
+        e = _.pick(e, ['name', 'url']);
+        if (!e.name || !e.url) return;
+        var station = new RadioModel(e);
+        station.save((err) => {
+            console.log('saved');
+            if (err) log.error('DB Save error:', err);
+            sendState();
+        });
     });
+    socket.on('Radio:remove', (e) => {
+        console.log('Remove from db', e);
+    });
+    socket.on('Radio:state:request', () => sendState(true));
 
     updateGPIO(speakerPin, false);
-    socket.emit('Radio:state', state);
-    socket.emit('Radio:stations', stations);
+    sendState();
     log.info('Startup completed');
+}
+
+function sendState(sendStations) {
+    if (sendStations !== false) sendStations = true;
+
+    socket.emit('Radio:state', _.omit(state, ['stations']));
+    if (sendStations) RadioModel.find((err, stations) => {
+        state.stations = stations;
+        socket.emit('Radio:stations', stations);
+    });
 }
 
 function updateGPIO(pin, pinState, callback) {
@@ -150,40 +173,37 @@ function updateGPIO(pin, pinState, callback) {
 
 function nextStation() {
     var i = state.lastPlayed + 1;
-    i %= stations.length;
-    return stations[i];
+    i %= state.stations.length;
+    return state.stations[i];
 }
 function previousStation() {
     var i = state.lastPlayed - 1;
-    if (i < 0) i = stations.length + i;
-    return stations[i];
+    if (i < 0) i = state.stations.length + i;
+    return state.stations[i];
 }
 
 function startRadio(station) {
-    var url = station;
-    if (!station) url = stations[state.lastPlayed];
-    station = parseInt(station);
-    if (station >= 0 && station < stations.length) url = stations[station];
+    var url;
 
-    if (!url || !url.stream) {
-        url = stations[0];
-        log.warn('Start radio received an empty station url');
-    }
-    var index = -1;
-    stations.forEach((e, i) => {
-        if (e.stream == url.stream) index = i;
-    });
+    if (_.isObject(station) && station.url) url = station.url;
+
+    var stationIndex = parseInt(station);
+    if (stationIndex >= 0 && stationIndex < state.stations.length) url = state.stations[stationIndex].url;
+
+    url = !url ? state.lastPlayed.url : url;
+
+    var index = _.findIndex(state.stations, e => e.url == url);
+    console.log(url, index, state.stations);
     if (index == -1) return log.warn('Radio was given a foreign stream url');
-    station = stations[index];
-    url = station.stream;
+
+    station = state.stations[index];
+    url = station.url;
 
     if (state.playing && index == state.lastPlayed) return;
 
     state.expectedToStop = state.playing;
     state.lastPlayed = index;
-
     if (player) {
-        log.debug(url, state);
         player.openFile(url);
     }
 }
@@ -193,7 +213,7 @@ function stopRadio() {
         player.stop();
     }
     else {
-        socket.emit('Radio:state', state);
+        sendState(false);
     }
 }
 
@@ -212,5 +232,5 @@ function changeVolume(mode) {
     if (player) {
         player.volume(state.volume);
     }
-    socket.emit('Radio:state', state);
+    sendState(false);
 }

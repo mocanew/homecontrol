@@ -8,19 +8,16 @@ class RadioPi extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            play: false,
             stations: [],
-            state: {
-                lastPlayed: 0,
-                playing: false,
-                volume: 100
-            }
+            lastPlayed: 0,
+            playing: false,
+            volume: 100
         };
         this.prev = this.prev.bind(this);
         this.next = this.next.bind(this);
         this.toggle = this.toggle.bind(this);
-        this.stationsUpdate = this.stationsUpdate.bind(this);
         this.stateUpdate = this.stateUpdate.bind(this);
+        this.stationUpdate = this.stationUpdate.bind(this);
     }
     prev() {
         socket.emit('Radio:prev');
@@ -34,30 +31,27 @@ class RadioPi extends React.Component {
     next() {
         socket.emit('Radio:next');
     }
-    stationsUpdate(e) {
+    stateUpdate(e) {
+        console.log(e);
+        this.setState(e);
+    }
+    stationUpdate(e) {
+        console.log(e);
         this.setState({
             stations: e
         });
     }
-    stateUpdate(e) {
-        this.setState({
-            state: e,
-            play: e.playing
-        });
-    }
     stationClick(e) {
-        socket.emit('Radio:start', {
-            stream: e
-        });
+        socket.emit('Radio:start', e);
     }
     componentDidMount() {
-        socket.on('Radio:stations', this.stationsUpdate);
         socket.on('Radio:state', this.stateUpdate);
+        socket.on('Radio:stations', this.stationUpdate);
         socket.emit('Radio:state:request');
     }
     componentWillUnmount() {
-        socket.off('Radio:stations', this.stationsUpdate);
         socket.off('Radio:state', this.stateUpdate);
+        socket.off('Radio:stations', this.stationUpdate);
     }
     changeVolume(e) {
         console.log(e);
@@ -66,14 +60,14 @@ class RadioPi extends React.Component {
         var stations = this.state.stations.map((e, index) => {
             var classes = classNames({
                 station: true,
-                active: this.state.state.lastPlayed == index,
-                faded: !this.state.state.playing && this.state.state.lastPlayed == index
+                active: this.state.lastPlayed == index,
+                faded: !this.state.playing && this.state.lastPlayed == index
             });
-            return <div className={classes} onClick={this.stationClick.bind(this, e.stream) } key={index} >{e.name}</div>;
+            return <div className={classes} onClick={this.stationClick.bind(this, e) } key={index} >{e.name}</div>;
         });
         var toggleClasses = classNames({
-            pause: this.state.play,
-            play: !this.state.play
+            pause: this.state.playing,
+            play: !this.state.playing
         });
         return (
             <div className="radiopi">
