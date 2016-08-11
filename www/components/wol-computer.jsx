@@ -151,7 +151,7 @@ class Card extends React.Component {
         return (
             <div className="wolCard">
                 <div className="wrapper">
-                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props) }><i className="fa fa-trash-o fa-fw"></i></div>
+                    <div title="Șterge" className="trash" onClick={this.props.remove(this.props.original) }><i className="fa fa-trash-o fa-fw"></i></div>
                     <div title={this.state.power === true ? 'Pornit' : this.state.power === false ? 'Oprit' : ''} className={power} onClick={this.ping}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                     <div className="image" style={imageStyle}></div>
                     <div className="titleRow">
@@ -178,6 +178,7 @@ Card.propTypes = {
         React.PropTypes.string,
         React.PropTypes.bool
     ]),
+    original: React.PropTypes.object,
     image: React.PropTypes.string,
     power: React.PropTypes.bool,
     onSave: React.PropTypes.func,

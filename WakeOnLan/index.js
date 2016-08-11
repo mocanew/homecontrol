@@ -1,26 +1,3 @@
-const dir = process.env.windir ? './WakeOnLan' : '/home/node/homecontrol/WakeOnLan';
-const fs = require('fs');
-
-var hosts;
-
-try {
-    hosts = JSON.parse(fs.readFileSync(dir + '/hosts.json'));
-}
-catch (e) {
-    hosts = [];
-}
-
-function updateJSON() {
-    socket.emit('WakeOnLan:listResponse', {
-        type: 'list',
-        hosts: hosts
-    });
-    fs.writeFile(dir + '/hosts.json', JSON.stringify(hosts), (err) => {
-        if (err) {
-            return log.error(err);
-        }
-    });
-}
 const macRegex = /([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})/ig;
 
 var production = !process.env.windir;
@@ -32,6 +9,7 @@ const async = require('async');
 const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
+const _ = require('lodash');
 
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
@@ -39,59 +17,85 @@ var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PO
     reconnectionDelayMax: 1000
 });
 
+var hosts = [];
+var ComputerModel;
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/HomeControl');
+
+var db = mongoose.connection;
+db.on('error', e => log.error('DB ERROR:', e));
+db.once('open', function () {
+    var computerSchema = mongoose.Schema({
+        name: String,
+        ip: String,
+        mac: String,
+        image: String
+    });
+    ComputerModel = mongoose.model('Computers', computerSchema);
+});
+
 socket.on('connect', () => {
     log.debug('Connected to homeControl');
     socket.emit('setServerName', 'WakeOnLan');
+    sendHosts();
 });
+
+function sendHosts(queryDB) {
+    if (queryDB !== false) queryDB = true;
+
+    if (queryDB) {
+        ComputerModel.find({}, (err, results) => {
+            hosts = results;
+            socket.emit('WakeOnLan:listResponse', {
+                type: 'list',
+                hosts: hosts
+            });
+        });
+    }
+    else {
+        socket.emit('WakeOnLan:listResponse', {
+            type: 'list',
+            hosts: hosts
+        });
+    }
+}
 
 socket.on('WakeOnLan:save', (e) => {
     if (!e || (!e.mac && !e.ip)) return;
     if (!e.name || e.name.length <= 0) {
         e.name = 'Computer ' + (hosts.length + 1);
     }
-    e.mac= e.mac.toUpperCase();
+    e.mac = e.mac.toUpperCase();
     if (!e.ip) {
         searchHost(e, (err, ip) => {
             e.ip = ip;
-            hosts.push(e);
-            log.debug(hosts);
-            updateJSON();
+            if (!e.ip) delete e.ip;
+            new ComputerModel(e).save(sendHosts);
         });
     }
     else if (!e.mac) {
         searchHost(e, (err, mac) => {
             e.mac = mac;
-            hosts.push(e);
-            log.debug(hosts);
-            updateJSON();
+            if (!e.mac) delete e.mac;
+            new ComputerModel(e).save(sendHosts);
         });
     }
     else {
-        hosts.push(e);
-        log.debug(hosts);
-        updateJSON();
+        new ComputerModel(e).save(sendHosts);
     }
 });
 
 socket.on('WakeOnLan:remove', (e) => {
-    log.debug(hosts);
-    for (var i = 0; i < hosts.length; i++) {
-        var item = hosts[i];
-        if (!item || (item.mac == e.mac && item.ip == e.ip)) {
-            hosts.splice(i, 1);
-            i--;
-        }
-    }
-    log.debug(hosts);
-    updateJSON();
-});
+    if (!e._id) return;
 
-socket.on('WakeOnLan:list', () => {
-    socket.emit('WakeOnLan:listResponse', {
-        type: 'list',
-        hosts: hosts
+    ComputerModel.remove(e, (err) => {
+        if (err) log.error(err);
+        sendHosts();
     });
 });
+
+socket.on('WakeOnLan:list', () => sendHosts(false));
 
 socket.on('WakeOnLan', (e) => {
     log.debug(e);
@@ -101,14 +105,17 @@ socket.on('WakeOnLan', (e) => {
 
     async.waterfall([
         (callback) => {
-            wol.wake(e.mac, (e) => {
-                callback(e);
+            wol.wake(e.mac, {
+                address: '192.168.0.255'
+            }, (err) => {
+                callback(err);
             });
         },
         (callback) => {
-            if (!hosts[e.mac]) return searchHost(e, callback);
+            var ip = _.find(hosts, { mac: e.mac }).ip;
+            if (!ip) return searchHost(e, callback);
 
-            callback(null, hosts[e.mac]);
+            callback(null, ip);
         },
         ping
     ], (err, result) => {
