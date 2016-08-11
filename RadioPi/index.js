@@ -85,7 +85,7 @@ function startup() {
             updateGPIO(speakerPin, true);
 
             sendState(false);
-            log.info('Start radio', state.lastPlayed.name);
+            log.info('Start radio', state.stations[state.lastPlayed].name);
         });
         // player.on('status', () => {
         //     log.debug('MPlayer status:', player.status, ', our state:', state);
@@ -190,7 +190,7 @@ function startRadio(station) {
     var stationIndex = parseInt(station);
     if (stationIndex >= 0 && stationIndex < state.stations.length) url = state.stations[stationIndex].url;
 
-    url = !url ? state.lastPlayed.url : url;
+    url = !url ? state.stations[state.lastPlayed].url : url;
 
     var index = _.findIndex(state.stations, e => e.url == url);
     console.log(url, index, state.stations);
