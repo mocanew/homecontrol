@@ -71,6 +71,10 @@ class Input extends React.Component {
     }
     clear() {
         this.refs.input.value = '';
+        this.setState({
+            empty: true,
+            error: false
+        });
     }
     render() {
         var parentClasses = classNames({
