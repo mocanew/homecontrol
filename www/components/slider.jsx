@@ -88,7 +88,7 @@ class Slider extends React.Component {
         if (touch) {
             e = e.touches[0];
         }
-        if (e.clientY >= rect.top && e.clientY <= rect.top + rect.height) {
+        if (e.clientX >= rect.left && e.clientX <= rect.left + rect.width && e.clientY >= rect.top && e.clientY <= rect.top + rect.height) {
             this.mouse.down = true;
             if (touch) window.volumeSlider = true;
         }
