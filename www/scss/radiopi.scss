@@ -9,6 +9,11 @@
 
 .radiopi {
     padding-bottom: 2 * $headerHeight;
+    transition: padding 0.5s;
+
+    &.titleShown{
+        padding-bottom: 2 * $headerHeight + 40px;
+    }
 }
 
 .loading {

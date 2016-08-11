@@ -68,8 +68,12 @@ class RadioPi extends React.Component {
             radioTitle: true,
             empty: !this.state.title || this.state.title.length == 0
         });
+        var wrapperClasses = classNames({
+            radiopi: true,
+            titleShown: this.state.title && this.state.title.length != 0
+        });
         return (
-            <div className="radiopi">
+            <div className={wrapperClasses}>
                 <div className="stations">
                     {
                         stations.length ? stations : <div className="loading">Loading</div>
