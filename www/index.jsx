@@ -13,6 +13,9 @@ import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import Header from './components/header.jsx';
 import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
+import Login from './routes/login.jsx';
+
+import auth from './auth';
 
 class App extends React.Component {
     constructor(props) {
@@ -61,12 +64,12 @@ class App extends React.Component {
     }
     render() {
         document.title = this.state.title;
+        var loginPage = <Login />;
+        var content = <main>{this.props.children}</main>
         return (
             <div>
                 <Header ref="header" documentTitle={this.state.title} />
-                <main>
-                    {this.props.children}
-                </main>
+                {auth.loggedIn() ? content : loginPage}
             </div>
         );
     }
