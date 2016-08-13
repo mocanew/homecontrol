@@ -32,6 +32,7 @@
     },
     "globals": {
         "socket": true,
-        "io": true
+        "io": true,
+        "$": true
     }
 }
