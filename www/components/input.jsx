@@ -10,6 +10,7 @@ class Input extends React.Component {
             empty: true,
             name: this.props.children ? this.props.children : this.props.name,
             title: this.props.children ? this.props.children : this.props.title,
+            type: this.props.type ? this.props.type : 'text',
             required: JSON.parse(this.props.required),
             message: this.props.message
         };
@@ -84,7 +85,7 @@ class Input extends React.Component {
         });
         return (
             <div className={parentClasses} ref="parent">
-                <input type="text" name={this.state.name} onInput={this.onInput} onBlur={this.onInput} ref="input" required={this.state.required} />
+                <input type={this.state.type} name={this.state.name} onInput={this.onInput} onBlur={this.onInput} ref="input" required={this.state.required} />
                 <span className="highlight"></span>
                 <span className="bar"></span>
                 <label htmlFor="name">{this.state.title + (this.state.required ? '*' : '') }</label>
@@ -100,6 +101,7 @@ Input.propTypes = {
     title: React.PropTypes.string,
     required: React.PropTypes.bool,
     message: React.PropTypes.string,
+    type: React.PropTypes.string,
     onChange: React.PropTypes.func,
     onInput: React.PropTypes.func,
     validator: React.PropTypes.func
