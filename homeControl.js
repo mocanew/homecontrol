@@ -1,7 +1,7 @@
-var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('HomeControl \t');
+const config = require('./config.js');
 
 const async = require('async');
 const dir = process.cwd();
@@ -14,16 +14,22 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (production ? '' : '-debug') + '.html'));
+var morgan = require('morgan');
+app.use(morgan('dev'));
+
+app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (config.production ? '' : '-debug') + '.html'));
 app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
 
 app.use('/images/', express.static(dir + '/www/images/'));
 app.use('/assets/', express.static(dir + '/assets/'));
+
+app.use('/api', require('./routes/api.js'));
+
 app.get('*', function (req, res) {
     res.redirect('/');
 });
 
-var server = app.listen((process.env.PORT ? process.env.PORT : production ? 8080 : 80), function () {
+var server = app.listen(config.socketPort, function () {
     var host = server.address().address;
     var port = server.address().port;
 
