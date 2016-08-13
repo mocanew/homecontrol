@@ -1,14 +1,12 @@
-const tvRemote = true;
-const speakerPin = 11;
 const lirc = require('lirc_node');
 const io = require('socket.io-client');
-var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('RadioPi \t');
 const MPlayer = require('mplayer');
 const async = require('async');
 const _ = require('lodash');
+const config = require('../config.js');
 
 var gpio, player;
 try {
@@ -33,7 +31,7 @@ var state = {
 };
 var RadioModel;
 
-socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
+socket = io.connect(config.masterSocket, {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
@@ -45,7 +43,7 @@ socket.on('connect', () => {
 async.waterfall([
     (callback) => {
         var mongoose = require('mongoose');
-        mongoose.connect('mongodb://localhost/HomeControl');
+        mongoose.connect(config.mongo + 'HomeControl');
 
         var db = mongoose.connection;
         db.on('error', e => log.error('DB ERROR:', e));
@@ -60,7 +58,7 @@ async.waterfall([
     },
     () => {
         if (gpio) {
-            gpio.setup(speakerPin, gpio.DIR_OUT, startup);
+            gpio.setup(config.speakerPin, gpio.DIR_OUT, startup);
         }
         else {
             startup();
@@ -76,13 +74,13 @@ function startup() {
                 return;
             }
 
-            updateGPIO(speakerPin, false);
+            updateGPIO(config.speakerPin, false);
             sendState(false);
             log.info('Mplayer stopped');
             log.debug(state);
         });
         player.on('start', () => {
-            updateGPIO(speakerPin, true);
+            updateGPIO(config.speakerPin, true);
 
             sendState(false);
             log.info('Start radio', state.stations[state.lastPlayed].name);
@@ -94,7 +92,7 @@ function startup() {
         });
     }
 
-    if (gpio && tvRemote) {
+    if (gpio && config.tvRemote) {
         var t = Date.now();
         var throttleExceptions = ['KEY_VOLUMEDOWN', 'KEY_VOLUMEUP', 'KEY_DOWN', 'KEY_UP'];
         lirc.init();
@@ -149,7 +147,7 @@ function startup() {
     });
     socket.on('Radio:state:request', () => sendState(true));
 
-    updateGPIO(speakerPin, false);
+    updateGPIO(config.speakerPin, false);
     sendState();
     log.info('Startup completed');
 }

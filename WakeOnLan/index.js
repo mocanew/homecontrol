@@ -1,6 +1,5 @@
 const macRegex = /([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})/ig;
 
-var production = !process.env.windir;
 const Minilog = require('minilog');
 Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.console);
 const log = Minilog('WakeOnLan \t');
@@ -10,9 +9,10 @@ const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
 const _ = require('lodash');
+const config = require('../config.js');
 
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:' + (process.env.PORT ? process.env.PORT : production ? '8080' : '80'), {
+var socket = io.connect(config.masterSocket, {
     reconnect: true,
     reconnectionDelayMax: 1000
 });
@@ -21,7 +21,7 @@ var hosts = [];
 var ComputerModel;
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/HomeControl');
+mongoose.connect(config.mongo + 'HomeControl');
 
 var db = mongoose.connection;
 db.on('error', e => log.error('DB ERROR:', e));
@@ -106,7 +106,7 @@ socket.on('WakeOnLan', (e) => {
     async.waterfall([
         (callback) => {
             wol.wake(e.mac, {
-                address: '192.168.0.255'
+                address: config.WakeOnLan.broadcast
             }, (err) => {
                 callback(err);
             });
