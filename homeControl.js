@@ -14,6 +14,7 @@ var Strategy = require('passport-local').Strategy;
 var User = require('./models/user.js');
 
 passport.use(new Strategy((username, password, cb) => {
+    username = username.toLowerCase();
     User.findOne({
         username: username
     }, (err, user) => {
