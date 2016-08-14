@@ -7,7 +7,7 @@ const filesArray = [
         base: 'www/',
         files: ['index.html']
     }];
-const dirs = ['RadioPi', 'WakeOnLan', 'assets', 'www/images'];
+const dirs = ['models', 'routes', 'RadioPi', 'WakeOnLan', 'assets', 'www/images'];
 const async = require('async');
 
 const fs = require('fs');
@@ -22,7 +22,7 @@ var conf = {
     host: 'rontav.go.ro',
     username: secure.username,
     password: secure.password,
-    baseDir: '/home/node/homecontrol/'
+    baseDir: '/var/homecontrol/'
 };
 
 var ssh = require('ssh2').Client();
