@@ -1,7 +1,7 @@
 var production = !process.env.windir;
 
 var config = {
-    mongo: 'mongodb://localhost/',
+    mongo: 'mongodb://localhost/HomeControl',
     socketPort: process.env.PORT ? process.env.PORT : production ? 8080 : 80,
     RadioPi: {
         speakerPin: 11,
@@ -16,6 +16,6 @@ var config = {
         admin: 9
     }
 };
-config.masterSocket = 'http://localhost:' + config.port;
+config.masterSocket = 'http://localhost:' + config.socketPort;
 
 module.exports = config;

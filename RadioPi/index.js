@@ -33,7 +33,8 @@ var RadioModel;
 
 socket = io.connect(config.masterSocket, {
     reconnect: true,
-    reconnectionDelayMax: 1000
+    reconnectionDelayMax: 1000,
+    query: 'secret=' + config.secret
 });
 socket.on('connect', () => {
     log.debug('Connected to homeControl');
@@ -43,7 +44,7 @@ socket.on('connect', () => {
 async.waterfall([
     (callback) => {
         var mongoose = require('mongoose');
-        mongoose.connect(config.mongo + 'HomeControl');
+        mongoose.connect(config.mongo);
 
         var db = mongoose.connection;
         db.on('error', e => log.error('DB ERROR:', e));

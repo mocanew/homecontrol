@@ -18,6 +18,7 @@
     background: $white;
     border: 1px solid $main-200;
     transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba($black, 0.4);
     transition: transform 0.5s, top 0.5s, left 0.5s;
 
     h4 {

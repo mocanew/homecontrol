@@ -2,7 +2,10 @@
 import 'expose?$!expose?jQuery!jquery';
 import 'imports?this=>window!./js/throttle.js';
 import io from 'socket.io-client';
-window.socket = io.connect(location.protocol == 'http:' || location.protocol == 'https:' ? location.origin : 'http://rontav.go.ro:80');
+function newSocket() {
+    window.socket = io.connect(location.protocol == 'http:' || location.protocol == 'https:' ? '//' + window.location.host : 'http://rontav.go.ro:80');
+}
+newSocket();
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap-webpack';
 
@@ -15,18 +18,34 @@ import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
 import Login from './routes/login.jsx';
 
-import auth from './auth';
-
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.swipeLeft = this.swipeLeft.bind(this);
         this.swipeRight = this.swipeRight.bind(this);
+        this.login = this.login.bind(this);
+        this.logout = this.logout.bind(this);
 
         this.state = {
+            loggedIn: false,
             menu: false,
             title: 'Home Control'
         };
+    }
+    login(e) {
+        console.log(e);
+        if (!e || !e.success) return;
+
+        newSocket();
+        this.setState({
+            loggedIn: true
+        });
+    }
+    logout() {
+        newSocket();
+        this.setState({
+            loggedIn: false
+        });
     }
     swipeLeft(e) {
         if (e.pointerType == 'mouse' || window.volumeSlider) return;
@@ -57,6 +76,10 @@ class App extends React.Component {
         elem.name = 'theme-color';
         elem.content = getComputedStyle(document.querySelector('nav.horizontal')).backgroundColor;
         document.getElementsByTagName('head')[0].appendChild(elem);
+
+        socket.on('logStatus', (e) => {
+            e ? this.login({ success: true }) : this.logout();
+        });
     }
     componentWillUnmount() {
         this.hammer.off('swipeleft');
@@ -64,12 +87,12 @@ class App extends React.Component {
     }
     render() {
         document.title = this.state.title;
-        var loginPage = <Login />;
-        var content = <main>{this.props.children}</main>
+        var loginPage = <Login onLogin={this.login} />;
+        var content = <main>{this.props.children}</main>;
         return (
             <div>
                 <Header ref="header" documentTitle={this.state.title} />
-                {auth.loggedIn() ? content : loginPage}
+                {this.state.loggedIn ? content : loginPage}
             </div>
         );
     }

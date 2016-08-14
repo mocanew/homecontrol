@@ -3,70 +3,26 @@ var api = express.Router();
 var config = require('../config.js');
 var _ = require('lodash');
 
-var jwt = require('jsonwebtoken');
-var bCrypt = require('bcrypt-nodejs');
+var User = require('../models/user.js');
 
-var mongoose = require('mongoose');
-mongoose.connect(config.mongo + 'HomeControl');
+var passport = require('passport');
 
-var UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        unique: true,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    permissionLevel: {
-        type: Number,
-        default: 0
-    }
-});
-UserSchema.methods.isCorrectPassword = function (password) {
-    return bCrypt.compareSync(password, this.password);
-};
-UserSchema.pre('save', function (next) {
-    if (this.isModified('password') || this.isNew) {
-        this.password = bCrypt.hashSync(this.password, bCrypt.genSaltSync(10), null);
-    }
-    next();
-});
+api.post('/login', (req, res) => {
+    passport.authenticate('local', function (err, user, info) {
+        if (err) console.log(err);
+        if (!user) return res.status(401).json(info);
 
-var User = mongoose.model('user', UserSchema);
+        req.logIn(user, (err) => {
+            if (err) console.log(err);
 
-api.post('/login', function (req, res) {
-    User.findOne({
-        username: req.body.username
-    }, (err, user) => {
-        if (err) throw err;
-
-        if (!user) {
-            return res.json({
-                success: false,
-                message: 'User not found.'
+            res.json({
+                success: true,
+                message: 'Hooray!'
             });
-        }
-
-        if (!user.isCorrectPassword(req.body.password)) {
-            return res.json({
-                success: false,
-                message: 'Wrong password.'
-            });
-        }
-
-        var token = jwt.sign(_.pick(user, ['username', '_id', 'permissionLevel']), config.secret, {
-            expiresIn: '1d'
         });
-
-        res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-        });
-    });
+    })(req, res);
 });
+
 api.post('/register', (req, res) => {
     var username = req.body.username;
     var password = req.body.password;
@@ -94,14 +50,14 @@ api.post('/register', (req, res) => {
     }, (err, user) => {
         if (err) {
             console.log('Error in SignUp: ' + err);
-            return res.json({
+            return res.status(500).json({
                 success: false,
-                message: 'Error in register'
+                message: 'Internal server error'
             });
         }
         if (user) {
             console.log('User already exists');
-            return res.json({
+            return res.status(400).json({
                 success: false,
                 message: 'User already exists'
             });
@@ -126,28 +82,20 @@ api.post('/register', (req, res) => {
     });
 });
 
-api.use(function (req, res, next) {
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-    if (!token) {
-        return res.status(403).send({
-            success: false,
-            message: 'No token provided.'
+api.use((req, res, next) => {
+    if (!req.isAuthenticated()) {
+        res.status(403).json({
+            success: 'false',
+            message: 'Forbidden'
         });
+        return;
     }
+    next();
+});
 
-    jwt.verify(token, config.secret, function (err, decoded) {
-        if (err) {
-            return res.json({
-                success: false, message:
-                'Failed to authenticate token.'
-            });
-        }
-
-        req.decoded = decoded;
-        req.user = decoded._doc;
-        next();
-    });
+api.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/');
 });
 
 api.get('/users', (req, res) => {

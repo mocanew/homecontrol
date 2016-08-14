@@ -9,6 +9,7 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
 
+        this.onLogin = _.isFunction(this.props.onLogin) ? this.props.onLogin : () => { };
         this.send = this.send.bind(this);
     }
     send(e) {
@@ -22,11 +23,10 @@ class Login extends React.Component {
         });
 
         $.post({
-            url: '/login',
-            data: data
-        }, (err, response) => {
-            console.log(err, response);
-        });
+            url: '/api/login',
+            data: data,
+            dataType: 'json'
+        }, this.onLogin);
     }
     componentDidMount() {
         this.refs.form.addEventListener('submit', this.send);
@@ -48,4 +48,8 @@ class Login extends React.Component {
         );
     }
 }
+Login.propTypes = {
+    onLogin: React.PropTypes.func
+};
+
 export default Login;
