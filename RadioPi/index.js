@@ -59,7 +59,7 @@ async.waterfall([
     },
     () => {
         if (gpio) {
-            gpio.setup(config.speakerPin, gpio.DIR_OUT, startup);
+            gpio.setup(config.RadioPi.speakerPin, gpio.DIR_OUT, startup);
         }
         else {
             startup();
@@ -75,13 +75,13 @@ function startup() {
                 return;
             }
 
-            updateGPIO(config.speakerPin, false);
+            updateGPIO(config.RadioPi.speakerPin, false);
             sendState(false);
             log.info('Mplayer stopped');
             log.debug(state);
         });
         player.on('start', () => {
-            updateGPIO(config.speakerPin, true);
+            updateGPIO(config.RadioPi.speakerPin, true);
 
             sendState(false);
             log.info('Start radio', state.stations[state.lastPlayed].name);
@@ -93,7 +93,7 @@ function startup() {
         });
     }
 
-    if (gpio && config.tvRemote) {
+    if (gpio && config.RadioPi.tvRemote) {
         var t = Date.now();
         var throttleExceptions = ['KEY_VOLUMEDOWN', 'KEY_VOLUMEUP', 'KEY_DOWN', 'KEY_UP'];
         lirc.init();
@@ -147,8 +147,9 @@ function startup() {
         console.log('Remove from db', e);
     });
     socket.on('Radio:state:request', () => sendState(true));
+    socket.on('requestState', () => sendState(true));
 
-    updateGPIO(config.speakerPin, false);
+    updateGPIO(config.RadioPi.speakerPin, false);
     sendState();
     log.info('Startup completed');
 }

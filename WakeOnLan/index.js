@@ -97,6 +97,7 @@ socket.on('WakeOnLan:remove', (e) => {
 });
 
 socket.on('WakeOnLan:list', () => sendHosts(false));
+socket.on('requestState', () => sendHosts(false));
 
 socket.on('WakeOnLan', (e) => {
     log.debug(e);
