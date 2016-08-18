@@ -132,8 +132,6 @@ class Card extends React.Component {
                         <Input validator={this.verifyMAC} onChange={(e) => this.setState({ mac: e }) } message="Introduceți o adresă MAC validă" ref="mac">MAC</Input>
                         <div className="buttonsRow">
                             <MaterialButton buttonStyle="flat" onClick={this.save}>Add</MaterialButton>
-                            <MaterialButton buttonStyle="flat" onClick={this.ping}>Ping</MaterialButton>
-                            <MaterialButton buttonStyle="flat" onClick={this.wake}>Wake</MaterialButton>
                         </div>
                     </div>
                 </div>
