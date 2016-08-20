@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import '../scss/slider.scss';
 
 class Slider extends React.Component {
@@ -100,7 +101,7 @@ class Slider extends React.Component {
         }
     }
     sendVolume() {
-        return window.throttle(100, (value) => socket.emit('Radio:volume', value));
+        return _.throttle((value) => socket.emit('Radio:volume', value), 100);
     }
     mouseUp() {
         this.mouse.down = false;
