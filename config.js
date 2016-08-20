@@ -1,3 +1,4 @@
+var permissions = require('./www/permissions.js');
 var production = !process.env.windir;
 
 var config = {
@@ -12,10 +13,7 @@ var config = {
         broadcast: '192.168.0.255'
     },
     secret: 'mySecretKey',
-    permissions: {
-        user: 0,
-        admin: 9
-    }
+    permissions: permissions
 };
 config.masterSocket = 'http://localhost:' + config.socketPort;
 
