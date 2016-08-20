@@ -26,7 +26,6 @@ var exp = {
     },
     module: {
         preLoaders: [
-            { test: /\.js?$/, exclude: /node_modules/, loader: 'eslint-loader' },
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
         ],
         loaders: [
@@ -48,7 +47,7 @@ var exp = {
             { test: /\.css$/, loaders: ['style', 'css', 'postcss'] },
             {
                 test: /\.(eot|svg|ttf|woff(2)?)(\?v=\d+\.\d+\.\d+)?/,
-                loader: 'file-loader'
+                loader: 'url-loader'
             }
         ]
     },
