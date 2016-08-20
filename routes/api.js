@@ -106,7 +106,12 @@ api.get('/users', (req, res) => {
         });
     }
 
-    User.find({}, (err, users) => res.json(users));
+    User.find({}, (err, users) => {
+        _.each(users, (user, key) => {
+            users[key] = _.omit(user._doc, ['password']);
+        });
+        res.json(users);
+    });
 });
 
 module.exports = api;
