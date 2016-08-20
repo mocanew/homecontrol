@@ -52,7 +52,6 @@ class WakeOnLan extends React.Component {
         }).bind(this);
     }
     render() {
-        document.title = 'Home Control';
         return (
             <div className="wakeonlan">
                 <Card onSave={this.addCard} />

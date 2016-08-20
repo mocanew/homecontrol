@@ -1,0 +1,16 @@
+@import 'variables';
+
+#table {
+    .materialBtn {
+        display: inline-block;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .fa {
+        margin-top: -2px;
+        font-size: 20px;
+    }
+    .fa-trash {
+        color: $red-800;
+    }
+}

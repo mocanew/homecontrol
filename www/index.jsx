@@ -1,6 +1,5 @@
 'use strict';
 import 'expose?$!expose?jQuery!jquery';
-import 'imports?this=>window!./js/throttle.js';
 import io from 'socket.io-client';
 function newSocket() {
     window.socket = io.connect(location.protocol == 'http:' || location.protocol == 'https:' ? '//' + window.location.host : 'http://rontav.go.ro:80');
@@ -16,7 +15,10 @@ import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import Header from './components/header.jsx';
 import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
+import Users from './routes/users.jsx';
 import Login from './routes/login.jsx';
+
+import permissions from './permissions.js';
 
 class App extends React.Component {
     constructor(props) {
@@ -26,20 +28,24 @@ class App extends React.Component {
         this.login = this.login.bind(this);
         this.logout = this.logout.bind(this);
 
+        var title = props && props.children && props.children.type && props.children.type.name ? props.children.type.name : 'Home Control';
+        if (title == 'WakeOnLan') title = 'Wake on Lan';
+        if (title == 'UserPage') title = 'Users';
+        if (title == 'RadioPi') title = 'Radio';
         this.state = {
             loggedIn: false,
             menu: false,
-            title: 'Home Control'
+            title: title
         };
     }
     login(e) {
-        console.log(e);
         if (!e || !e.success) return;
 
         newSocket();
         this.setState({
             loggedIn: true
         });
+        socket.emit('user');
     }
     logout() {
         newSocket();
@@ -67,6 +73,15 @@ class App extends React.Component {
             menu: newState.menu
         });
     }
+    componentWillReceiveProps(nextProps) {
+        var title = nextProps.children.type.name;
+        if (title == 'WakeOnLan') title = 'Wake on Lan';
+        if (title == 'UserPage') title = 'Users';
+        if (title == 'RadioPi') title = 'Radio';
+        this.setState({
+            title: title
+        });
+    }
     componentDidMount() {
         this.hammer = new Hammer(document.getElementById('root'), {});
         this.hammer.on('swipeleft', this.swipeLeft);
@@ -77,21 +92,26 @@ class App extends React.Component {
         elem.content = getComputedStyle(document.querySelector('nav.horizontal')).backgroundColor;
         document.getElementsByTagName('head')[0].appendChild(elem);
 
-        socket.on('logStatus', (e) => {
+        socket.on('user', e => {
+            this.setState({
+                id: e._id,
+                username: e.username,
+                permission: e.permissionLevel,
+                admin: e.permissionLevel >= permissions.admin
+            });
+        });
+        socket.on('logStatus', e => {
             e ? this.login({ success: true }) : this.logout();
         });
-    }
-    componentWillUnmount() {
-        this.hammer.off('swipeleft');
-        this.hammer.off('swiperight');
+        socket.emit('user');
     }
     render() {
-        document.title = this.state.title;
+        document.title = this.state.title + ' - Home Control';
         var loginPage = <Login onLogin={this.login} />;
         var content = <main>{this.props.children}</main>;
         return (
             <div>
-                <Header ref="header" documentTitle={this.state.title} />
+                <Header ref="header" documentTitle={this.state.title} admin={this.state.admin} />
                 {this.state.loggedIn ? content : loginPage}
             </div>
         );
@@ -110,6 +130,7 @@ ReactDOM.render(
             <Route path="/android_asset/www/index.html" component={RadioPi}/>
             <Route path="/radiopi" component={RadioPi}/>
             <Route path="/wakeonlan" component={WakeOnLan}/>
+            <Route path="/users" component={Users}/>
         </Route>
     </Router>,
     document.getElementById('root')

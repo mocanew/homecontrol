@@ -56,6 +56,7 @@ class Header extends React.Component {
                     <div className="links">
                         <Link to="/">Radio Pi</Link>
                         <Link to="/wakeonlan">Wake on Lan</Link>
+                        { this.props.admin ? <Link to="/users">Users</Link> : ''}
                     </div>
                 </nav>
                 <nav className="horizontal">
@@ -70,7 +71,8 @@ class Header extends React.Component {
     }
 }
 Header.propTypes = {
-    documentTitle: React.PropTypes.string
+    documentTitle: React.PropTypes.string,
+    admin: React.PropTypes.bool
 };
 
 export default Header;
