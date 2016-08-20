@@ -1,20 +1,26 @@
 import React from 'react';
 import '../scss/_input.scss';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 class Input extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        var state = _.merge({}, {
             error: false,
             empty: true,
-            name: this.props.children ? this.props.children : this.props.name,
-            title: this.props.children ? this.props.children : this.props.title,
-            type: this.props.type ? this.props.type : 'text',
-            required: JSON.parse(this.props.required),
-            message: this.props.message
-        };
-        this.value = '';
+            name: '',
+            title: '',
+            type: 'text',
+            required: false,
+            message: '',
+            value: ''
+        }, props);
+        state.required = JSON.parse(props.required);
+        state.name = props.name ? props.name : props.children;
+        state.title = props.title ? props.title : props.children;
+        state.empty = state.value.length <= 0;
+        this.state = state;
         this.onInput = this.onInput.bind(this);
     }
     static get defaultProps() {
@@ -45,7 +51,7 @@ class Input extends React.Component {
         var input = this.refs.input.value;
         if (typeof this.props.onInput == 'function') this.props.onInput(input);
 
-        if (typeof this.props.onChange == 'function' && this.value.trim() != input.trim()) this.props.onChange(input.trim());
+        if (typeof this.props.onChange == 'function' && this.state.value.trim() != input.trim()) this.props.onChange(input.trim());
 
         var validator = Input.defaultValidator(input, {
             required: this.state.required
@@ -63,9 +69,9 @@ class Input extends React.Component {
         this.setState({
             empty: validator.empty,
             error: validator.error,
-            message: validator.message
+            message: validator.message,
+            value: input
         });
-        this.value = input;
         if (typeof validator.callback == 'function') {
             setTimeout(validator.callback);
         }
@@ -85,7 +91,7 @@ class Input extends React.Component {
         });
         return (
             <div className={parentClasses} ref="parent">
-                <input type={this.state.type} name={this.state.name} onInput={this.onInput} onBlur={this.onInput} ref="input" required={this.state.required} />
+                <input type={this.state.type} name={this.state.name} onInput={this.onInput} onBlur={this.onInput} ref="input" required={this.state.required} defaultValue={this.state.value} />
                 <span className="highlight"></span>
                 <span className="bar"></span>
                 <label htmlFor="name">{this.state.title + (this.state.required ? '*' : '') }</label>
@@ -99,9 +105,13 @@ Input.propTypes = {
     name: React.PropTypes.string,
     children: React.PropTypes.string,
     title: React.PropTypes.string,
-    required: React.PropTypes.bool,
+    required: React.PropTypes.oneOfType([
+        React.PropTypes.bool,
+        React.PropTypes.string
+    ]),
     message: React.PropTypes.string,
     type: React.PropTypes.string,
+    value: React.PropTypes.string,
     onChange: React.PropTypes.func,
     onInput: React.PropTypes.func,
     validator: React.PropTypes.func
