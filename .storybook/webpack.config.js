@@ -1,6 +1,6 @@
-var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
 var precss = require('precss');
+var path = require('path');
 
 var exp = {
     devServer: {
@@ -10,20 +10,11 @@ var exp = {
             index: '/'
         }
     },
-    entry: [
-        './www/index.jsx'
-    ],
-    output: {
-        path: '/assets/',
-        filename: 'bundle.js',
-        publicPath: '/assets/'
-    },
     amd: {
         jQuery: true
     },
     module: {
         preLoaders: [
-            { test: /\.js?$/, exclude: /node_modules/, loader: 'eslint-loader' },
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
         ],
         loaders: [
@@ -45,30 +36,17 @@ var exp = {
             { test: /\.css$/, loaders: ['style', 'css', 'postcss'] },
             {
                 test: /\.(eot|svg|ttf|woff(2)?)(\?v=\d+\.\d+\.\d+)?/,
-                loader: 'url'
+                loader: 'url-loader'
             }
         ]
     },
     postcss: function () {
         return [autoprefixer, precss];
     },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
-    ],
     externals: {},
     resolve: {
         extensions: ['', '.js', '.jsx']
     }
 };
-
-if (process.argv && process.argv.indexOf('--production') != -1) {
-    exp.plugins.push(
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        })
-    );
-}
 
 module.exports = exp;
