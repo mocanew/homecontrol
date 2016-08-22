@@ -25,7 +25,7 @@
   "author": "Valentin Mocanu <mr_vali@yahoo.ro> (http://rontavstudio.com)",
   "license": "ISC",
   "devDependencies": {
-    "@kadira/storybook": "^1.26.0",
+    "@kadira/storybook": "^2.3.0",
     "autoprefixer": "^6.3.4",
     "babel-core": "^6.8.0",
     "babel-eslint": "^6.0.4",
@@ -46,12 +46,13 @@
     "sass-lint": "^1.7.0",
     "sass-loader": "^3.2.0",
     "scp2": "^0.3.0",
+    "script-loader": "^0.7.0",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
     "arpscan": "^0.1.0",
     "async": "^2.0.0-rc.1",
-    "bcrypt-nodejs": "0.0.3",
+    "bcrypt": "^0.8.7",
     "body-parser": "^1.15.1",
     "bootstrap": "^3.3.6",
     "bootstrap-webpack": "0.0.5",

@@ -1,5 +1,5 @@
 var config = require('../config.js');
-var bCrypt = require('bcrypt-nodejs');
+var bCrypt = require('bcrypt');
 
 var mongoose = require('mongoose');
 mongoose.connect(config.mongo);
