@@ -4,7 +4,10 @@
         "es6": true,
         "node": true
     },
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
     "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
@@ -17,10 +20,26 @@
         "react"
     ],
     "rules": {
-        "indent": [0, 4],
-        "quotes": [2, "single"],
-        "semi": [1, "always"],
-        "brace-style": [2, "stroustrup"],
+        "indent": [
+            0,
+            4
+        ],
+        "quotes": [
+            2,
+            "single",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
+        ],
+        "semi": [
+            1,
+            "always"
+        ],
+        "brace-style": [
+            2,
+            "stroustrup"
+        ],
         "no-lonely-if": 2,
         "no-console": 0,
         "space-before-function-paren": 0,
