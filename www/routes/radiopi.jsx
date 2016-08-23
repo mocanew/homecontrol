@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import MaterialButton from '../components/materialButton.jsx';
+import {Button} from 'material-react';
 import RangeSlider from '../components/slider.jsx';
 import '../scss/radiopi.scss';
 
@@ -86,9 +86,9 @@ class RadioPi extends React.Component {
                         }
                     </div>
                     <RangeSlider />
-                    <MaterialButton buttonStyle="flat iconBtn leftArrow" onClick={this.prev} ></MaterialButton>
-                    <MaterialButton buttonStyle="flat iconBtn" classes={toggleClasses} onClick={this.toggle} ref="toggle" ></MaterialButton>
-                    <MaterialButton buttonStyle="flat iconBtn rightArrow" onClick={this.next} ></MaterialButton>
+                    <Button buttonStyle="flat iconBtn leftArrow" onClick={this.prev} ></Button>
+                    <Button buttonStyle="flat iconBtn" classes={toggleClasses} onClick={this.toggle} ref="toggle" ></Button>
+                    <Button buttonStyle="flat iconBtn rightArrow" onClick={this.next} ></Button>
                 </div>
             </div>
         );

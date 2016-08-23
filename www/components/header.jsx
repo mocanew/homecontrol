@@ -1,5 +1,5 @@
 import React from 'react';
-import MaterialButton from './materialButton.jsx';
+import {Button} from 'material-react';
 import '../scss/common.scss';
 import '../scss/header.scss';
 import classNames from 'classnames';
@@ -60,7 +60,7 @@ class Header extends React.Component {
                     </div>
                 </nav>
                 <nav className="horizontal">
-                    <MaterialButton buttonStyle="flat iconBtn menu" classes="hamburger" onClick={this.toggleMenu}></MaterialButton>
+                    <Button buttonStyle="flat iconBtn menu" classes="hamburger" onClick={this.toggleMenu}></Button>
                     <div className="pageTitle">
                         {this.props.documentTitle}
                     </div>

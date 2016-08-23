@@ -74,6 +74,7 @@
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "lirc_node": "0.0.4",
+    "material-react": "0.0.5",
     "minilog": "^3.0.0",
     "mongoose": "^4.5.8",
     "morgan": "^1.7.0",

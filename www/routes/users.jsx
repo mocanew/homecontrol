@@ -1,6 +1,5 @@
 import React from 'react';
-import Input from '../components/input.jsx';
-import MaterialButton from '../components/materialButton.jsx';
+import {Button, Input} from 'material-react';
 import '../scss/users.scss';
 
 class UserPage extends React.Component {
@@ -36,7 +35,7 @@ class UserPage extends React.Component {
                                 <td><Input name="password" title="Password (unchanged)" /></td>
                                 <td>{user.permissionLevel}</td>
                                 <td>
-                                    <MaterialButton buttonStyle="flat"><i className="fa fa-fw fa-trash"></i></MaterialButton>
+                                    <Button buttonStyle="flat"><i className="fa fa-fw fa-trash"></i></Button>
                                 </td>
                             </tr>)
                         }

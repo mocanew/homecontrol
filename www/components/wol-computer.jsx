@@ -1,6 +1,5 @@
 import React from 'react';
-import MaterialButton from './materialButton.jsx';
-import Input from './input.jsx';
+import {Button, Input} from 'material-react';
 import classNames from 'classnames';
 
 class Card extends React.Component {
@@ -131,7 +130,7 @@ class Card extends React.Component {
                         <Input validator={this.verifyIP} onChange={(e) => this.setState({ ip: e }) } message="Introduceți o adresă IP validă" ref="ip">IP</Input>
                         <Input validator={this.verifyMAC} onChange={(e) => this.setState({ mac: e }) } message="Introduceți o adresă MAC validă" ref="mac">MAC</Input>
                         <div className="buttonsRow">
-                            <MaterialButton buttonStyle="flat" onClick={this.save}>Add</MaterialButton>
+                            <Button buttonStyle="flat" onClick={this.save}>Add</Button>
                         </div>
                     </div>
                 </div>
@@ -157,8 +156,8 @@ class Card extends React.Component {
                         <div className="subtitle">{this.props.ip && this.props.ip.length ? (this.props.mac && this.props.mac.length ? this.props.ip + ' - ' + this.props.mac : this.props.ip) : this.props.mac}</div>
                     </div>
                     <div className="buttonsRow">
-                        <MaterialButton buttonStyle="flat" onClick={this.ping}>Ping</MaterialButton>
-                        <MaterialButton buttonStyle="flat" onClick={this.wake}>Wake</MaterialButton>
+                        <Button buttonStyle="flat" onClick={this.ping}>Ping</Button>
+                        <Button buttonStyle="flat" onClick={this.wake}>Wake</Button>
                     </div>
                 </div>
             </div>
