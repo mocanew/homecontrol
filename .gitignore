@@ -4,3 +4,4 @@
 /sftp.json
 *.keystore
 *.log
+/node_modules
