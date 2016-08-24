@@ -26,20 +26,17 @@ build:
     - add-ssh-key:
         keyname: deployer
     - script:
-        name: echo env
-        code: printenv
-    # - script:
-    #     name: npm install
-    #     code: npm install --no-optional
-    # - script:
-    #     name: set NODE_ENV
-    #     code: export NODE_ENV=production
-    # - script:
-    #     name: npm run build
-    #     code: npm run build
-    # - script:
-    #     name: list files
-    #     code: ls -l --color
-    # - script:
-    #     name: deploy to raspberry
-    #     code: node sftp.js
+        name: npm install
+        code: npm install --no-optional
+    - script:
+        name: set NODE_ENV
+        code: export NODE_ENV=production
+    - script:
+        name: npm run build
+        code: npm run build
+    - script:
+        name: list files
+        code: ls -l --color
+    - script:
+        name: deploy to raspberry
+        code: node sftp.js
