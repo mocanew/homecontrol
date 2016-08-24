@@ -28,8 +28,9 @@ if (secure) {
 }
 else {
     conf.username = 'deployer';
-    conf.privateKey = process.env.deployer_PRIVATE;
+    conf.privateKey = process.env['deployer_PRIVATE'];
 }
+console.log(process.env);
 
 var ssh = require('ssh2').Client();
 var Client = require('scp2').Client;
