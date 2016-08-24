@@ -21,6 +21,7 @@ catch (e) {
     conf.username = process.env.deploy_user;
     conf.password = process.env.deploy_password;
     conf.host = process.env.deploy_host;
+    conf.port = process.env.deploy_port;
     conf.baseDir = process.env.deploy_baseDir;
 }
 
