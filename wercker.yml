@@ -26,9 +26,6 @@ build:
     - add-ssh-key:
         keyname: deployer
     - script:
-        name: show env
-        code: printenv
-    - script:
         name: npm install
         code: npm install --no-optional
     - script:
