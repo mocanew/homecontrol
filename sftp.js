@@ -11,24 +11,16 @@ const dirs = ['models', 'routes', 'RadioPi', 'WakeOnLan', 'assets', 'www/images'
 const async = require('async');
 
 const fs = require('fs');
-var secure;
+var conf;
 try {
-    secure = JSON.parse(fs.readFileSync('sftp.json', 'utf8'));
+    conf = JSON.parse(fs.readFileSync('sftp.json', 'utf8'));
 }
 catch (e) {
-    console.log('No sftp.json file');
-}
-var conf = {
-    host: 'rontav.go.ro',
-    baseDir: '/var/homecontrol/'
-};
-if (secure) {
-    conf.username = secure.username;
-    conf.password = secure.password;
-}
-else {
+    console.log('No sftp.json file, let\'s try to get the info from env vars');
     conf.username = process.env.deploy_user;
     conf.password = process.env.deploy_password;
+    conf.host = process.env.deploy_host;
+    conf.baseDir = process.env.deploy_baseDir;
 }
 
 var ssh = require('ssh2').Client();
