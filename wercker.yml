@@ -23,6 +23,8 @@ build:
   # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     # A step that executes `npm install` command
+    - add-ssh-key:
+        keyname: deployer
     - script:
         name: echo env
         code: printenv

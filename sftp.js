@@ -11,19 +11,25 @@ const dirs = ['models', 'routes', 'RadioPi', 'WakeOnLan', 'assets', 'www/images'
 const async = require('async');
 
 const fs = require('fs');
-var secure = JSON.parse(fs.readFileSync('sftp.json', 'utf8'));
-
-if (!secure.username || !secure.username.length || !secure.password || !secure.password.length) {
-    console.log('No username or password for sftp');
-    process.exit(1);
+var secure;
+try {
+    secure = JSON.parse(fs.readFileSync('sftp.json', 'utf8'));
 }
-
+catch (e) {
+    console.log('No sftp.json file');
+}
 var conf = {
     host: 'rontav.go.ro',
-    username: secure.username,
-    password: secure.password,
     baseDir: '/var/homecontrol/'
 };
+if (secure) {
+    conf.username = secure.username;
+    conf.password = secure.password;
+}
+else {
+    conf.username = 'deployer';
+    conf.privateKey = process.env.deployer_PRIVATE;
+}
 
 var ssh = require('ssh2').Client();
 var Client = require('scp2').Client;
