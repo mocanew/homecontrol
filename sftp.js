@@ -27,10 +27,9 @@ if (secure) {
     conf.password = secure.password;
 }
 else {
-    conf.username = 'deployer';
-    conf.privateKey = process.env['deployer_PRIVATE'];
+    conf.username = process.env.deploy_user;
+    conf.password = process.env.deploy_password;
 }
-console.log(process.env);
 
 var ssh = require('ssh2').Client();
 var Client = require('scp2').Client;
