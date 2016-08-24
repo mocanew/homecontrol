@@ -17,6 +17,7 @@ try {
 }
 catch (e) {
     console.log('No sftp.json file, let\'s try to get the info from env vars');
+    conf = {};
     conf.username = process.env.deploy_user;
     conf.password = process.env.deploy_password;
     conf.host = process.env.deploy_host;
