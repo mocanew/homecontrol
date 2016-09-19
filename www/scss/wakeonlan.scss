@@ -23,22 +23,22 @@ $powerPointSize: 20px;
 
 .wakeonlan {
     display: flex;
-    padding: 0 10px 10px;
-    flex-wrap: wrap;
     align-content: stretch;
     align-items: stretch;
+    flex-wrap: wrap;
+    padding: 0 10px 10px;
 }
 
 .wolCard {
     position: relative;
     display: flex;
-    min-width: 210px; // the buttons width on one line
-    padding: 0 5px;
-    margin-top: 10px;
-    flex-grow: 1;
     align-content: stretch;
     align-items: stretch;
     flex-direction: column;
+    flex-grow: 1;
+    min-width: 210px; // the buttons width on one line
+    padding: 0 5px;
+    margin-top: 10px;
 
     &.new {
         min-width: 320px;
@@ -65,12 +65,12 @@ $powerPointSize: 20px;
     }
     .wrapper {
         display: flex;
+        flex-basis: 100%;
+        flex-direction: column;
+        flex-grow: 1;
         overflow: hidden;
         border-radius: 2px;
         box-shadow: 0 0 5px rgba($black, 0.8);
-        flex-grow: 1;
-        flex-basis: 100%;
-        flex-direction: column;
     }
     .power {
         @extend %icon;
@@ -104,13 +104,13 @@ $powerPointSize: 20px;
     }
     .image {
         position: relative;
+        flex-grow: 1;
         width: 100%;
         background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;
-        flex-grow: 1;
 
-        &:before {
+        &::before {
             display: block;
             width: 100%;
             padding-top: 56.25%;
@@ -118,8 +118,8 @@ $powerPointSize: 20px;
         }
     }
     .titleRow {
-        padding: 20px 16px 16px;
         flex-grow: 0;
+        padding: 20px 16px 16px;
 
         .title {
             font-size: 24px;
@@ -134,8 +134,8 @@ $powerPointSize: 20px;
         }
     }
     .buttonsRow {
-        margin: 8px;
         flex-grow: 0;
+        margin: 8px;
 
         .materialBtn {
             display: inline-block;
