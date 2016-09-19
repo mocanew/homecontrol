@@ -3,6 +3,7 @@ Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.conso
 const log = Minilog('HomeControl \t');
 const config = require('./config.js');
 
+const _ = require('lodash');
 const async = require('async');
 const dir = process.cwd();
 var io = require('socket.io');
@@ -104,7 +105,18 @@ function redirect(servers, socket) {
     if (!socket.isServer && (!socket.request.user || !socket.request.user._id)) return;
 
     async.forEachOf(servers, (value, server) => {
-        async.each(value, (event) => {
+        async.each(value.read, (event) => {
+            socket.on(event, (e) => {
+                if (socket.name) return;
+
+                messageToServer({
+                    server: server,
+                    name: event,
+                    data: e
+                });
+            });
+        });
+        async.each(value.write, (event) => {
             socket.on(event, (e) => {
                 if (socket.name) return;
 
@@ -117,9 +129,15 @@ function redirect(servers, socket) {
         });
     });
 }
-var redirects = {
-    'WakeOnLan': ['WakeOnLan', 'WakeOnLan:list', 'WakeOnLan:ping', 'WakeOnLan:save', 'WakeOnLan:remove'],
-    'Radio': ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request', 'Radio:add', 'Radio:remove']
+var redirectsToServer = {
+    WakeOnLan: {
+        read: ['WakeOnLan', 'WakeOnLan:list', 'WakeOnLan:ping'],
+        write: ['WakeOnLan:save', 'WakeOnLan:remove']
+    },
+    Radio: {
+        read: ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request'],
+        write: ['Radio:add', 'Radio:remove']
+    }
 };
 var passportSocketioMiddleware = passportSocketIo.authorize({
     secret: config.secret,
@@ -139,20 +157,15 @@ io.use((socket, next) => {
     }
     passportSocketioMiddleware(socket, next);
 });
-var clients = {};
 var servers = {};
 
 io.on('connection', function (socket) {
-    clients[socket.id] = socket;
     socket.join('clients');
 
     socket.emit('logStatus', true);
 
     socket.on('disconnect', () => {
-        if (clients[socket.id]) {
-            delete clients[socket.id];
-        }
-        else if (socket.name) {
+        if (socket.name) {
             log.warn('Lost connection with ' + socket.name);
             delete servers[socket.name];
         }
@@ -160,7 +173,6 @@ io.on('connection', function (socket) {
 
     socket.on('setServerName', (e) => {
         socket.name = e;
-        delete clients[socket.id];
         servers[socket.name] = socket;
         socket.emit('requestState');
         socket.join('servers');
@@ -176,5 +188,6 @@ io.on('connection', function (socket) {
         socket.on('Radio:state', (e) => io.to('clients').emit('Radio:state', e));
         socket.on('Radio:stations', (e) => io.to('clients').emit('Radio:stations', e));
     });
-    redirect(redirects, socket);
+    socket.on('user', () => socket.emit('user', _.pick(socket.request.user._doc, ['username', '_id', 'permissionLevel'])));
+    redirect(redirectsToServer, socket);
 });
