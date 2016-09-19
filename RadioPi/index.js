@@ -7,6 +7,7 @@ const MPlayer = require('mplayer');
 const async = require('async');
 const _ = require('lodash');
 const config = require('../config.js');
+const mongoose = require('mongoose');
 
 var gpio, player;
 try {
@@ -29,7 +30,7 @@ var state = {
     expectedToStop: false,
     stopping: false
 };
-var RadioModel;
+var RadioModel = require('../models/radioStation.js');
 
 socket = io.connect(config.masterSocket, {
     reconnect: true,
@@ -43,19 +44,8 @@ socket.on('connect', () => {
 
 async.waterfall([
     (callback) => {
-        var mongoose = require('mongoose');
-        mongoose.connect(config.mongo);
-
         var db = mongoose.connection;
-        db.on('error', e => log.error('DB ERROR:', e));
-        db.once('open', function () {
-            var radioSchema = mongoose.Schema({
-                name: String,
-                url: String
-            });
-            RadioModel = mongoose.model('RadioStation', radioSchema);
-            callback();
-        });
+        db.once('open', () => callback());
     },
     () => {
         if (gpio) {
