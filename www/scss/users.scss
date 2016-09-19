@@ -10,7 +10,9 @@
         margin-top: -2px;
         font-size: 20px;
     }
-    .fa-trash {
-        color: $red-800;
+    .flat {
+        .fa {
+            color: $red-800;
+        }
     }
 }
