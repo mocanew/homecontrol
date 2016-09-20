@@ -1,4 +1,5 @@
 import React from 'react';
+import reqwest from 'reqwest';
 // import classNames from 'classnames';
 import {Button, Input} from 'material-react';
 import '../scss/login.scss';
@@ -21,10 +22,11 @@ class Login extends React.Component {
             data[input.name.toLowerCase()] = input.value;
         });
 
-        $.post({
+        reqwest({
             url: '/api/login',
+            method: 'POST',
             data: data,
-            dataType: 'json'
+            type: 'json'
         }, this.onLogin);
     }
     componentDidMount() {

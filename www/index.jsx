@@ -1,12 +1,11 @@
 'use strict';
-import 'expose?$!expose?jQuery!jquery';
 import io from 'socket.io-client';
 function newSocket() {
     window.socket = io.connect(location.protocol == 'http:' || location.protocol == 'https:' ? '//' + window.location.host : 'http://rontav.go.ro:80');
 }
 newSocket();
 import 'font-awesome/css/font-awesome.min.css';
-import 'bootstrap-webpack';
+import 'css-reset-and-normalize/css/flavored-reset-and-normalize.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';

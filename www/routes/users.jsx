@@ -1,4 +1,5 @@
 import React from 'react';
+import reqwest from 'reqwest';
 import {Button, Input} from 'material-react';
 import '../scss/users.scss';
 
@@ -10,7 +11,7 @@ class UserPage extends React.Component {
         };
     }
     componentDidMount() {
-        $.get('/api/users', (e) => {
+        reqwest('/api/users', (e) => {
             this.setState({
                 users: e
             });
