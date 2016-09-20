@@ -4,7 +4,6 @@ const log = Minilog('HomeControl \t');
 const config = require('./config.js');
 
 const _ = require('lodash');
-const async = require('async');
 const dir = process.cwd();
 var io = require('socket.io');
 var passportSocketIo = require('passport.socketio');
@@ -85,49 +84,45 @@ var server = app.listen(config.socketPort, function () {
 });
 
 function messageToServer(options, callback) {
-    if (!options || !options.server || !options.name) {
+    if (!_.isObject(options) || !_.isString(options.server) || !_.isString(options.name)) {
         return;
     }
 
     if (!servers[options.server]) {
         return setTimeout(messageToServer, 500, options);
     }
+
     servers[options.server].emit(options.name, options.data);
 
-    if (_.isFunction(options.callback)) {
-        options.callback();
-    }
-    if (_.isFunction(callback)) {
-        callback();
-    }
+    if (_.isFunction(options.callback)) options.callback();
+    if (_.isFunction(callback)) callback();
 }
-function redirect(servers, socket) {
-    if (!socket.isServer && (!socket.request.user || !socket.request.user._id)) return;
+function redirectClientEvents(servers, socket) {
+    var permissions = socket.request.user.permissions;
+    if (socket.hasEvents || !_.isObject(socket.request.user) || !_.isObject(permissions) || !socket.request.user._id) return;
 
-    async.forEachOf(servers, (value, server) => {
-        async.each(value.read, (event) => {
-            socket.on(event, (e) => {
-                if (socket.name) return;
-
-                messageToServer({
+    _.each(servers, (value, server) => {
+        var perm = permissions[server.toLowerCase()];
+        if (perm >= 1) {
+            _.each(value.read, (event) => {
+                socket.on(event, (e) => messageToServer({
                     server: server,
                     name: event,
                     data: e
-                });
+                }));
             });
-        });
-        async.each(value.write, (event) => {
-            socket.on(event, (e) => {
-                if (socket.name) return;
-
-                messageToServer({
+        }
+        if (perm >= 2) {
+            _.each(value.write, (event) => {
+                socket.on(event, (e) => messageToServer({
                     server: server,
                     name: event,
                     data: e
-                });
+                }));
             });
-        });
+        }
     });
+    socket.hasEvents = true;
 }
 var redirectsToServer = {
     WakeOnLan: {
@@ -159,10 +154,15 @@ io.use((socket, next) => {
 });
 var servers = {};
 
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
     socket.join('clients');
+    if (socket.request && socket.request.user && !_.isUndefined(socket.request.user.permissions)) {
+        var perm = socket.request.user.permissions;
+        if (perm.radio >= 1) socket.join('radioUsers');
+        if (perm.wakeonlan >= 1) socket.join('wakeonlanUsers');
+    }
 
-    socket.emit('logStatus', true);
+    socket.emit('loginStatus', true);
 
     socket.on('disconnect', () => {
         if (socket.name) {
@@ -171,23 +171,23 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('setServerName', (e) => {
-        socket.name = e;
+    socket.on('setServerName', (name) => {
+        socket.name = name;
         servers[socket.name] = socket;
-        socket.emit('requestState');
         socket.join('servers');
         socket.leave('clients');
 
-        socket.on('WakeOnLan:response', (e) => {
-            io.to('clients').emit('WakeOnLan:response', e);
-        });
-        socket.on('WakeOnLan:listResponse', (e) => {
-            io.to('clients').emit('WakeOnLan:listResponse', e);
-        });
+        socket.on('WakeOnLan:response', (e) => io.to('wakeonlanUsers').emit('WakeOnLan:response', e));
+        socket.on('WakeOnLan:listResponse', (e) => io.to('wakeonlanUsers').emit('WakeOnLan:listResponse', e));
 
-        socket.on('Radio:state', (e) => io.to('clients').emit('Radio:state', e));
-        socket.on('Radio:stations', (e) => io.to('clients').emit('Radio:stations', e));
+        socket.on('Radio:state', (e) => io.to('radioUsers').emit('Radio:state', e));
+        socket.on('Radio:stations', (e) => io.to('radioUsers').emit('Radio:stations', e));
+
+        socket.emit('requestState');
     });
-    socket.on('user', () => socket.emit('user', _.pick(socket.request.user._doc, ['username', '_id', 'permissionLevel'])));
-    redirect(redirectsToServer, socket);
+    socket.on('user', () => socket.emit('user', _.pick(socket.request.user._doc, ['username', '_id', 'permissions'])));
+
+    if (!socket.isServer) {
+        redirectClientEvents(redirectsToServer, socket);
+    }
 });

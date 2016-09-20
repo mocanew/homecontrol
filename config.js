@@ -1,4 +1,3 @@
-var permissions = require('./www/permissions.js');
 var production = !process.env.windir;
 
 var config = {
@@ -12,8 +11,7 @@ var config = {
     WakeOnLan: {
         broadcast: '192.168.0.255'
     },
-    secret: 'mySecretKey',
-    permissions: permissions
+    secret: 'mySecretKey'
 };
 config.masterSocket = 'http://localhost:' + config.socketPort;
 

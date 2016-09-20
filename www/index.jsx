@@ -17,8 +17,6 @@ import WakeOnLan from './routes/wakeonlan.jsx';
 import Users from './routes/users.jsx';
 import Login from './routes/login.jsx';
 
-import permissions from './permissions.js';
-
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -95,11 +93,10 @@ class App extends React.Component {
             this.setState({
                 id: e._id,
                 username: e.username,
-                permission: e.permissionLevel,
-                admin: e.permissionLevel >= permissions.admin
+                permission: e.permissions
             });
         });
-        socket.on('logStatus', e => {
+        socket.on('loginStatus', e => {
             e ? this.login({ success: true }) : this.logout();
         });
         socket.emit('user');

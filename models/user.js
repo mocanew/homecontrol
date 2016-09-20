@@ -14,9 +14,19 @@ var UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    permissionLevel: {
-        type: Number,
-        default: 0
+    permissions: {
+        users: {
+            type: Number,
+            default: 0
+        },
+        wakeonlan: {
+            type: Number,
+            default: 0
+        },
+        radio: {
+            type: Number,
+            default: 0
+        }
     }
 });
 UserSchema.methods.isCorrectPassword = function (password) {
