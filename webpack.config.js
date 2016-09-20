@@ -52,9 +52,6 @@ var exp = {
     postcss: function () {
         return [autoprefixer, precss];
     },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
-    ],
     externals: {},
     resolve: {
         extensions: ['', '.js', '.jsx']
@@ -72,7 +69,6 @@ if (process.argv && process.argv.indexOf('--production') != -1) {
 }
 else {
     exp.entry.webpack = 'webpack-dev-server/client?http://0.0.0.0:8090';
-    exp.entry.webpackHot = 'webpack/hot/only-dev-server';
 }
 
 module.exports = exp;
