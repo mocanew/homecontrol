@@ -132,11 +132,11 @@ function redirect(servers, socket) {
 var redirectsToServer = {
     WakeOnLan: {
         read: ['WakeOnLan', 'WakeOnLan:list', 'WakeOnLan:ping'],
-        write: ['WakeOnLan:save', 'WakeOnLan:remove']
+        write: ['WakeOnLan:save', 'WakeOnLan:delete']
     },
     Radio: {
         read: ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request'],
-        write: ['Radio:add', 'Radio:remove']
+        write: ['Radio:add', 'Radio:delete']
     }
 };
 var passportSocketioMiddleware = passportSocketIo.authorize({

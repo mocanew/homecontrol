@@ -87,7 +87,7 @@ socket.on('WakeOnLan:save', (e) => {
     }
 });
 
-socket.on('WakeOnLan:remove', (e) => {
+socket.on('WakeOnLan:delete', (e) => {
     if (!e._id) return;
 
     ComputerModel.remove(e, (err) => {

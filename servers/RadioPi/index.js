@@ -133,7 +133,7 @@ function startup() {
             sendState();
         });
     });
-    socket.on('Radio:remove', (e) => {
+    socket.on('Radio:delete', (e) => {
         console.log('Remove from db', e);
     });
     socket.on('Radio:state:request', () => sendState(true));
