@@ -9,7 +9,7 @@ const arpscanner = require('arpscan');
 const wol = require('wake_on_lan');
 const Ping = require('ping');
 const _ = require('lodash');
-const config = require('../config.js');
+const config = require('../../config.js');
 
 var io = require('socket.io-client');
 var socket = io.connect(config.masterSocket, {

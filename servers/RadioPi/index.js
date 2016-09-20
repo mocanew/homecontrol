@@ -6,7 +6,7 @@ const log = Minilog('RadioPi \t');
 const MPlayer = require('mplayer');
 const async = require('async');
 const _ = require('lodash');
-const config = require('../config.js');
+const config = require('../../config.js');
 const mongoose = require('mongoose');
 
 var gpio, player;
@@ -30,7 +30,7 @@ var state = {
     expectedToStop: false,
     stopping: false
 };
-var RadioModel = require('../models/radioStation.js');
+var RadioModel = require('../../models/radioStation.js');
 
 socket = io.connect(config.masterSocket, {
     reconnect: true,
