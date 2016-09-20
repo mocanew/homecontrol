@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 var gpio, player;
 try {
     gpio = require('rpi-gpio');
-    if (typeof process.env.nogpio != 'undefined') throw 'No GPIO';
+    if (!_.isUndefined(process.env.nogpio)) throw 'No GPIO';
 }
 catch (er) {
     gpio = null;
@@ -155,7 +155,7 @@ function sendState(sendStations) {
 }
 
 function updateGPIO(pin, pinState, callback) {
-    if (typeof callback != 'function') callback = function () { };
+    if (!_.isFunction(callback)) callback = () => { };
 
     state.playing = pinState;
     if (!gpio) return callback();
@@ -213,10 +213,10 @@ function toggleRadio() {
 }
 
 function changeVolume(mode) {
-    if (typeof mode == 'string') {
+    if (_.isString(mode)) {
         state.volume += 2 * (mode == '+' ? 1 : -1);
     }
-    else if (typeof mode == 'number') {
+    else if (_.isNumber(mode)) {
         state.volume = mode;
     }
     state.volume = Math.min(Math.max(state.volume, 0), 100);

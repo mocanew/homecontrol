@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {Button, Input} from 'material-react';
 import classNames from 'classnames';
 
@@ -122,7 +123,7 @@ class Card extends React.Component {
         };
     }
     render() {
-        if (typeof this.props.onSave == 'function') {
+        if (_.isFunction(this.props.onSave)) {
             return (
                 <div className="wolCard new">
                     <div className="wrapper">
@@ -139,7 +140,7 @@ class Card extends React.Component {
 
         var power = classNames({
             power: true,
-            pinging: typeof this.state.power != 'boolean' ? true : false,
+            pinging: _.isBoolean(this.state.power) ? true : false,
             on: this.state.power === true ? true : false
         });
         var imageStyle = {
@@ -149,7 +150,7 @@ class Card extends React.Component {
             <div className="wolCard">
                 <div className="wrapper">
                     <div title="Șterge" className="trash" onClick={this.props.remove(this.props.original) }><i className="fa fa-trash-o fa-fw"></i></div>
-                    <div title={this.state.power === true ? 'Pornit' : this.state.power === false ? 'Oprit' : ''} className={power} onClick={this.ping}>{ typeof this.state.power != 'boolean' ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
+                    <div title={this.state.power === true ? 'Pornit' : this.state.power === false ? 'Oprit' : ''} className={power} onClick={this.ping}>{ _.isBoolean(this.state.power) ? <i className="fa fa-refresh fa-spin fa-fw"></i> : ''}</div>
                     <div className="image" style={imageStyle}></div>
                     <div className="titleRow">
                         <div className="title">{this.name}</div>

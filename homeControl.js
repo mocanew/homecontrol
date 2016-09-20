@@ -94,10 +94,10 @@ function messageToServer(options, callback) {
     }
     servers[options.server].emit(options.name, options.data);
 
-    if (typeof options.callback == 'function') {
+    if (_.isFunction(options.callback)) {
         options.callback();
     }
-    if (typeof callback == 'function') {
+    if (_.isFunction(callback)) {
         callback();
     }
 }
