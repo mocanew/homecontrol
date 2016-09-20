@@ -15,6 +15,6 @@ var RadioSchema = mongoose.Schema({
         required: true
     }
 });
-var Radio = mongoose.model('user', RadioSchema);
+var Radio = mongoose.model('RadioStation', RadioSchema);
 
 module.exports = Radio;
