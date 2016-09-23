@@ -3,6 +3,8 @@ Minilog.pipe(Minilog.backends.console.formatMinilog).pipe(Minilog.backends.conso
 const log = Minilog('HomeControl \t');
 const config = require('./config.js');
 
+const bufferEq = require('buffer-equal-constant-time');
+const crypto = require('crypto');
 const _ = require('lodash');
 const dir = process.cwd();
 var io = require('socket.io');
@@ -54,8 +56,14 @@ const express = require('express');
 var app = express();
 
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json({
+    verify: function (req, res, buf) {
+        req.rawBody = buf.toString();
+    }
+}));
 app.use(require('cookie-parser')());
 app.use(expressSession);
 app.use(passport.initialize());
@@ -63,6 +71,31 @@ app.use(passport.session());
 
 var morgan = require('morgan');
 app.use(morgan('dev'));
+
+function signBlob(key, blob) {
+    return 'sha1=' + crypto.createHmac('sha1', key).update(blob).digest('hex');
+}
+
+app.post('/updateApp', (req, res) => {
+    var contype = req.headers['content-type'];
+    if (!contype || contype.indexOf('application/json') !== 0) return res.status(400).send('Unknown content type');
+
+    var payload = req.body;
+    if (!payload || !payload.hook || !req.headers['x-hub-signature']) return res.status(403).send('Invalid payload or the signature is missing');
+
+    var computedSig = new Buffer(signBlob(config.secret, req.rawBody));
+
+    if (!bufferEq(new Buffer(req.headers['x-hub-signature']), computedSig))
+        return res.status(401).send('X-Hub-Signature does not match blob signature');
+
+    log.debug('Webhook received; payload:', payload);
+
+    if (payload.hook.events.indexOf('release') == -1) return res.status(405).send('unknown hook event');
+
+    // download and install last version
+
+    res.send('success');
+});
 
 app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (config.production ? '' : '-debug') + '.html'));
 app.get('/index.jsx', (req, res) => res.sendFile(dir + '/www/index.jsx'));
