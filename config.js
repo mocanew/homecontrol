@@ -1,6 +1,7 @@
 var production = !process.env.windir;
 
 var config = {
+    dev: false,
     updates: 'dev',
     production: production,
     mongo: 'mongodb://localhost/HomeControl',
