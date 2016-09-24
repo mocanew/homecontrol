@@ -32,11 +32,19 @@ build:
         name: set NODE_ENV
         code: export NODE_ENV=production
     - script:
-        name: npm run build
-        code: npm run build
+        name: npm run build:makeRelease
+        code: npm run build:makeRelease
     - script:
         name: list files
         code: ls -l --color
-    - script:
-        name: deploy to raspberry
-        code: node sftp.js
+deploy:
+    steps:
+        - github-create-release:
+            token: $GITHUB_TOKEN
+            tag: $GITHUB_RELEASE_VERSION
+            title: Home Control $GITHUB_RELEASE_VERSION
+            draft: true
+        - github-upload-asset:
+            token: $GITHUB_TOKEN
+            file: build.zip
+            filename: homecontrol-$GITHUB_RELEASE_VERSION.zip
