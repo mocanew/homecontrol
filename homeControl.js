@@ -5,8 +5,7 @@ const config = require('./config.js');
 
 const bufferEq = require('buffer-equal-constant-time');
 const crypto = require('crypto');
-const http = require('http');
-const fs = require('fs');
+const fs = require('fs-extra');
 const AdmZip = require('adm-zip');
 const _ = require('lodash');
 const dir = process.cwd();
@@ -80,12 +79,17 @@ function signBlob(key, blob) {
 }
 
 function download(url, path, cb) {
-    http.get(url, (response) => {
-        response.on('data', (data) => fs.appendFileSync(path, data));
-        response.on('end', () => {
-            fs.unlink(path);
-            cb(path);
-        });
+    var request = require('request');
+    var file = fs.createWriteStream(path);
+    var sendReq = request.get(url);
+
+    sendReq.pipe(file);
+
+    file.on('finish', () => file.close(() => cb(path)));
+
+    file.on('error', function (err) {
+        fs.unlink(path);
+        log.error(err);
     });
 }
 
@@ -106,15 +110,30 @@ app.post('/updateApp', (req, res) => {
     if (!payload.release) return res.status(405).send('No \'release\' variable');
     if (config.updates == 'stable' && payload.release.prerelease) return res.status(204).send('I don\'t want pre-releases');
 
-    var zipPath;
+    var zipURL;
     _.each(payload.release.assets, (fileObject) => {
-        if (fileObject.name.indexOf('homecontrol-') == 0) zipPath = fileObject.browser_download_url;
+        if (fileObject.name.indexOf('homecontrol-') == 0) zipURL = fileObject.browser_download_url;
     });
-    if (!zipPath) return res.status(404).send('I haven\'t found a valid named zip file to download.');
+    if (!zipURL) return res.status(404).send('I haven\'t found a valid named zip file to download.');
 
-    download(zipPath, './build.zip', (path) => {
+    fs.removeSync('./build.zip');
+    fs.removeSync('./temp');
+    download(zipURL, './build.zip', (path) => {
         var zip = new AdmZip(path);
         zip.extractAllTo('./temp');
+        try {
+            fs.accessSync(path, fs.F_OK);
+            fs.copySync('./deploy/config.js', '../config.js.back');
+        }
+        catch (e) {
+            // It isn't accessible
+        }
+        fs.emptyDirSync('./deploy');
+        fs.copySync('./temp', './deploy');
+        fs.copySync('../config.js.back', './deploy/config.js');
+        fs.remove('../config.js.back');
+        fs.removeSync('./build.zip');
+        fs.removeSync('./temp');
         res.send('success');
     });
 });
