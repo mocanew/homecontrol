@@ -42,8 +42,8 @@ build:
         code: export GITHUB_RELEASE_VERSION=$(echo "console.log(require('./package.json').version);" | node)
     - github-create-release:
         token: $GITHUB_TOKEN
-        tag: $GITHUB_RELEASE_VERSION
-        title: Home Control $GITHUB_RELEASE_VERSION
+        tag: v$GITHUB_RELEASE_VERSION
+        title: Home Control v$GITHUB_RELEASE_VERSION
         draft: true
     - github-upload-asset:
         token: $GITHUB_TOKEN
