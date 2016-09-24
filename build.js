@@ -8,6 +8,7 @@ var colors;
 var zip = {
     files: [
         'homeControl.js',
+        'config.js',
         'package.json',
         'LICENSE',
         'www/index.html'
