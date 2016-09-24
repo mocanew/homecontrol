@@ -48,4 +48,4 @@ build:
     - github-upload-asset:
         token: $GITHUB_TOKEN
         file: build.zip
-        filename: homecontrol-$GITHUB_RELEASE_VERSION.zip
+        filename: homecontrol-build-$GITHUB_RELEASE_VERSION.zip
