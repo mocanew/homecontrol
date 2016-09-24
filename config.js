@@ -2,7 +2,7 @@ var production = !process.env.windir;
 
 var config = {
     dev: false,
-    updates: 'dev',
+    updates: 'production',
     production: production,
     mongo: 'mongodb://localhost/HomeControl',
     socketPort: process.env.PORT ? process.env.PORT : production ? 8080 : 80,
