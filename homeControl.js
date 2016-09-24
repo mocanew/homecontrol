@@ -5,6 +5,9 @@ const config = require('./config.js');
 
 const bufferEq = require('buffer-equal-constant-time');
 const crypto = require('crypto');
+const http = require('http');
+const fs = require('fs');
+const AdmZip = require('adm-zip');
 const _ = require('lodash');
 const dir = process.cwd();
 var io = require('socket.io');
@@ -76,12 +79,22 @@ function signBlob(key, blob) {
     return 'sha1=' + crypto.createHmac('sha1', key).update(blob).digest('hex');
 }
 
+function download(url, path, cb) {
+    http.get(url, (response) => {
+        response.on('data', (data) => fs.appendFileSync(path, data));
+        response.on('end', () => {
+            fs.unlink(path);
+            cb(path);
+        });
+    });
+}
+
 app.post('/updateApp', (req, res) => {
     var contype = req.headers['content-type'];
     if (!contype || contype.indexOf('application/json') !== 0) return res.status(400).send('Unknown content type');
 
     var payload = req.body;
-    if (!payload || !payload.hook || !req.headers['x-hub-signature']) return res.status(403).send('Invalid payload or the signature is missing');
+    if (!payload || !req.headers['x-hub-signature']) return res.status(403).send('Invalid payload or the signature is missing');
 
     var computedSig = new Buffer(signBlob(config.secret, req.rawBody));
 
@@ -90,11 +103,20 @@ app.post('/updateApp', (req, res) => {
 
     log.debug('Webhook received; payload:', payload);
 
-    if (payload.hook.events.indexOf('release') == -1) return res.status(405).send('unknown hook event');
+    if (!payload.release) return res.status(405).send('No \'release\' variable');
+    if (config.updates == 'stable' && payload.release.prerelease) return res.status(204).send('I don\'t want pre-releases');
 
-    // download and install last version
+    var zipPath;
+    _.each(payload.release.assets, (fileObject) => {
+        if (fileObject.name.indexOf('homecontrol-') == 0) zipPath = fileObject.browser_download_url;
+    });
+    if (!zipPath) return res.status(404).send('I haven\'t found a valid named zip file to download.');
 
-    res.send('success');
+    download(zipPath, './build.zip', (path) => {
+        var zip = new AdmZip(path);
+        zip.extractAllTo('./temp');
+        res.send('success');
+    });
 });
 
 app.get('/', (req, res) => res.sendFile(dir + '/www/index' + (config.production ? '' : '-debug') + '.html'));
