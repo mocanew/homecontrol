@@ -37,14 +37,15 @@ build:
     - script:
         name: list files
         code: ls -l --color
-deploy:
-    steps:
-        - github-create-release:
-            token: $GITHUB_TOKEN
-            tag: $GITHUB_RELEASE_VERSION
-            title: Home Control $GITHUB_RELEASE_VERSION
-            draft: true
-        - github-upload-asset:
-            token: $GITHUB_TOKEN
-            file: build.zip
-            filename: homecontrol-$GITHUB_RELEASE_VERSION.zip
+    - script:
+        name: set env version
+        code: export GITHUB_RELEASE_VERSION=$(echo "console.log(require('./package.json').version);" | node)
+    - github-create-release:
+        token: $GITHUB_TOKEN
+        tag: $GITHUB_RELEASE_VERSION
+        title: Home Control $GITHUB_RELEASE_VERSION
+        draft: true
+    - github-upload-asset:
+        token: $GITHUB_TOKEN
+        file: build.zip
+        filename: homecontrol-$GITHUB_RELEASE_VERSION.zip

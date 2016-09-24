@@ -137,10 +137,5 @@ async.waterfall([
         });
         zipFile.writeZip('./build.zip');
         cb();
-    },
-    cb => {
-        if (!isMode('release')) return cb();
-
-        exec('export GITHUB_RELEASE_VERSION=' + require('./package.json').version, () => cb());
     }
 ], (e) => log(e ? e : '--- Build finished ---', e ? 'red' : 'green'));

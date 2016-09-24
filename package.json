@@ -10,7 +10,7 @@
     "build:zip": "node build.js --zip",
     "build:android": "node build.js --android --install",
     "build:all": "node build.js --webpack --android --install --zip",
-    "build:makeRelease": "node build.js --webpack --zip --release",
+    "build:makeRelease": "node build.js --webpack --zip",
     "production": "npm install --production --progress=false && (screen -dm sudo service homecontrol restart && screen -dm sudo service wakeonlan restart && screen -dm sudo service radiopi restart)",
     "dev": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol watch:scsslint webpackDevServer",
     "devww": "npm-run-all --parallel watch:wakeonlan watch:radiopi watch:homecontrol watch:scsslint",
