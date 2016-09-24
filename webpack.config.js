@@ -52,6 +52,7 @@ var exp = {
     postcss: function () {
         return [autoprefixer, precss];
     },
+    plugins: [],
     externals: {},
     resolve: {
         extensions: ['', '.js', '.jsx']
