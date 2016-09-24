@@ -119,25 +119,31 @@ app.post('/updateApp', (req, res) => {
     fs.removeSync('./build.zip');
     fs.removeSync('./temp');
     download(zipURL, './build.zip', (path) => {
-        var backedupConfig = false;
+        var backedupConfig;
+        var base = config.dev ? './deploy/' : './';
         var zip = new AdmZip(path);
         zip.extractAllTo('./temp');
+
         try {
             fs.accessSync(path, fs.F_OK);
-            fs.copySync('./deploy/config.js', '../config.js.back');
+            fs.copySync(base + 'config.js', '../config.js.back');
             backedupConfig = true;
         }
         catch (e) {
-            // It isn't accessible
+            backedupConfig = false;
         }
-        fs.emptyDirSync('./deploy');
-        fs.copySync('./temp', './deploy');
+
+        fs.emptyDirSync(base);
+        fs.copySync('./temp', base);
+
         if (backedupConfig) {
-            fs.copySync('../config.js.back', './deploy/config.js');
+            fs.copySync('../config.js.back', base + 'config.js');
             fs.remove('../config.js.back');
         }
+
         fs.removeSync('./build.zip');
         fs.removeSync('./temp');
+
         res.send('success');
     });
 });
