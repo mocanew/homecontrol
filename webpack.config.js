@@ -19,9 +19,6 @@ var exp = {
         filename: '[name].js',
         publicPath: '/assets/'
     },
-    amd: {
-        jQuery: true
-    },
     module: {
         preLoaders: [
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
