@@ -85,6 +85,7 @@ class Slider extends React.Component {
     }
     mouseDown(e) {
         var rect = this.refs.slider.getClientRects()[0];
+        if (!rect) return;
         var touch = e.type == 'touchstart';
         if (touch) {
             e = e.touches[0];
