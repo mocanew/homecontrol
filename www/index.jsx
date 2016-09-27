@@ -6,6 +6,8 @@ function newSocket() {
 newSocket();
 import 'font-awesome/css/font-awesome.min.css';
 import 'css-reset-and-normalize/css/flavored-reset-and-normalize.css';
+import config from '../config.js';
+console.log(config);
 
 import React from 'react';
 import ReactDOM from 'react-dom';

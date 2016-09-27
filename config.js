@@ -1,11 +1,10 @@
-var production = !process.env.windir;
+var _ = require('lodash');
 
-var config = {
-    dev: false,
+var defaults = {
     updates: 'production',
-    production: production,
+    production: true,
     mongo: 'mongodb://localhost/HomeControl',
-    socketPort: process.env.PORT ? process.env.PORT : production ? 8080 : 80,
+    port: 8080,
     RadioPi: {
         speakerPin: 11,
         tvRemote: true
@@ -15,6 +14,25 @@ var config = {
     },
     secret: 'mySecretKey'
 };
-config.masterSocket = 'http://localhost:' + config.socketPort;
+
+var config = {};
+
+try {
+    config = require('./config.json');
+
+    if (!process.env.browser) {
+        config.secret = require('./secret.json').secret;
+    }
+}
+catch (e) {
+    console.error('Config or secret file is invalid');
+}
+config = _.merge(defaults, config);
+config.socketURL = 'http://localhost:' + config.port;
+
+if (process.env.browser) {
+    delete config.secret;
+    delete config.mongo;
+}
 
 module.exports = config;

@@ -120,7 +120,7 @@ app.post('/updateApp', (req, res) => {
     fs.removeSync('./temp');
     download(zipURL, './build.zip', (path) => {
         var backedupConfig;
-        var base = config.dev ? './deploy/' : './';
+        var base = config.production ? './' : './deploy/';
         var zip = new AdmZip(path);
         zip.extractAllTo('./temp');
 
@@ -160,7 +160,7 @@ app.get('*', function (req, res) {
     res.redirect('/');
 });
 
-var server = app.listen(config.socketPort, function () {
+var server = app.listen(config.port, function () {
     var host = server.address().address;
     var port = server.address().port;
 

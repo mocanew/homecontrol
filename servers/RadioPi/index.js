@@ -32,7 +32,7 @@ var state = {
 };
 var RadioModel = require('../../models/radioStation.js');
 
-socket = io.connect(config.masterSocket, {
+socket = io.connect(config.socketURL, {
     reconnect: true,
     reconnectionDelayMax: 1000,
     query: 'secret=' + config.secret

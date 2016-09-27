@@ -8,3 +8,5 @@
 /build.zip
 /deploy/
 /temp/
+/secret.json
+/config.json

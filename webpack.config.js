@@ -32,6 +32,7 @@ var exp = {
                     presets: ['es2015', 'react']
                 }
             },
+            { test: /\.json$/, loader: 'json-loader' },
             { test: /\.png$/, loader: 'url-loader?limit=10000&minetype=image/png' },
             { test: /\.jpg$/, loader: 'url-loader?limit=10000&minetype=image/jpg' },
             { test: /\.gif$/, loader: 'url-loader?limit=10000&minetype=image/gif' },
@@ -49,7 +50,13 @@ var exp = {
     postcss: function () {
         return [autoprefixer, precss];
     },
-    plugins: [],
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                browser: true
+            }
+        })
+    ],
     externals: {},
     resolve: {
         extensions: ['', '.js', '.jsx']
