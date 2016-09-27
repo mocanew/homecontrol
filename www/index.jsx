@@ -19,6 +19,10 @@ import WakeOnLan from './routes/wakeonlan.jsx';
 import Users from './routes/users.jsx';
 import Login from './routes/login.jsx';
 
+import EventEmitter from 'eventemitter3';
+
+window.HomeControl = new EventEmitter();
+
 class App extends React.Component {
     constructor(props) {
         super(props);
