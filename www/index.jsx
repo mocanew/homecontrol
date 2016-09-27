@@ -11,7 +11,6 @@ console.log(config);
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 import Hammer from 'hammerjs';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import Header from './components/header.jsx';
@@ -19,8 +18,6 @@ import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
 import Users from './routes/users.jsx';
 import Login from './routes/login.jsx';
-
-import store from './store.js';
 
 class App extends React.Component {
     constructor(props) {
@@ -124,17 +121,15 @@ App.propTypes = {
 };
 
 ReactDOM.render(
-    <Provider store={store}>
-        <Router history={browserHistory}>
-            <Route path="/" component={App}>
-                <IndexRoute component={RadioPi} />
-                <Route path="/index.html" component={RadioPi}/>
-                <Route path="/android_asset/www/index.html" component={RadioPi}/>
-                <Route path="/radiopi" component={RadioPi}/>
-                <Route path="/wakeonlan" component={WakeOnLan}/>
-                <Route path="/users" component={Users}/>
-            </Route>
-        </Router>
-    </Provider>,
+    <Router history={browserHistory}>
+        <Route path="/" component={App}>
+            <IndexRoute component={RadioPi} />
+            <Route path="/index.html" component={RadioPi}/>
+            <Route path="/android_asset/www/index.html" component={RadioPi}/>
+            <Route path="/radiopi" component={RadioPi}/>
+            <Route path="/wakeonlan" component={WakeOnLan}/>
+            <Route path="/users" component={Users}/>
+        </Route>
+    </Router>,
     document.getElementById('root')
 );
