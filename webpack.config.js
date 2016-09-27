@@ -51,6 +51,7 @@ var exp = {
         return [autoprefixer, precss];
     },
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             'process.env': {
                 browser: true
@@ -74,6 +75,7 @@ if (process.argv && process.argv.indexOf('--production') != -1) {
 }
 else {
     exp.entry.webpack = 'webpack-dev-server/client?http://0.0.0.0:8090';
+    exp.entry.webpackHot = 'webpack/hot/only-dev-server';
 }
 
 module.exports = exp;
