@@ -11,18 +11,10 @@
         <script>
             var domain = window.location.protocol + '//' + window.location.hostname;
 
-            if (location.origin.indexOf('rontav.go.ro') != -1) {
-                var js = document.createElement("script");
-                js.type = "text/javascript";
-                js.src = domain + ":8091/assets/bundle.js";
-                document.body.appendChild(js);
-            }
-            else {
-                var js = document.createElement("script");
-                js.type = "text/javascript";
-                js.src = domain + ":8090/assets/bundle.js";
-                document.body.appendChild(js);
-            }
+            var js = document.createElement("script");
+            js.type = "text/javascript";
+            js.src = domain + ":8090/assets/bundle.js";
+            document.body.appendChild(js);
         </script>
     </body>
 </html>
