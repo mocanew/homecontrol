@@ -142,7 +142,7 @@ nav {
             height: 100%;
             padding: 0;
             cursor: pointer;
-            background: $main-500;
+            background: $main-600;
             transition: width 0.5s;
 
             &:hover {
@@ -180,5 +180,29 @@ nav {
         line-height: $headerHeight;
         color: $white;
         transition: left 0.5s;
+    }
+    .edit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: $headerHeight;
+        overflow: hidden;
+        font-size: 24px;
+        line-height: $headerHeight;
+        color: $white;
+        text-align: center;
+        cursor: pointer;
+        background: $main-600;
+        transition: right 0.5s ease;
+
+        &.save {
+            right: $headerHeight;
+        }
+        &.out {
+            right: -$headerHeight;
+        }
+        &:hover {
+            background: $main-700;
+        }
     }
 }

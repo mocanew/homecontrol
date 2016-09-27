@@ -14,6 +14,9 @@
     &.titleShown {
         padding-bottom: 2 * $headerHeight + 40px;
     }
+    &.noPadding {
+        padding-bottom: 0;
+    }
 }
 
 .loading {
@@ -26,6 +29,16 @@
     transform: translate(-50%, -50%);
 }
 
+.editedStation {
+    &:first-of-type {
+        margin-top: 15px;
+    }
+    .materialInput {
+        display: inline-block;
+        width: 50%;
+        padding: 0 5px;
+    }
+}
 .station {
     display: block;
     width: 100%;
@@ -53,8 +66,16 @@
     height: 2 * $headerHeight;
     text-align: center;
     background: $main-600;
-    transition: left 0.5s, width 0.5s;
+    transition: bottom 0.3s, left 0.5s, width 0.5s;
 
+    &.out {
+        bottom: -2 * $headerHeight;
+
+        .radioTitle {
+            top: 0;
+            height: 0;
+        }
+    }
     .radioTitle {
         position: absolute;
         top: -40px;
