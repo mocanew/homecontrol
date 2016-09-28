@@ -40,8 +40,8 @@ class Login extends React.Component {
             <div className="loginWrapper">
                 <div className="backdrop"></div>
                 <form action="#" className="loginForm" ref="form">
-                    <Input name="username" required="true">Username</Input>
-                    <Input name="password" required="true" type="password">Password</Input>
+                    <Input name="username" required={true}>Username</Input>
+                    <Input name="password" required={true} type="password">Password</Input>
                     <Button onClick={this.send} buttonStyle="flat">Login</Button>
                     <input type="submit" className="hidden" />
                 </form>
