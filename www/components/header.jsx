@@ -81,6 +81,7 @@ class Header extends React.Component {
             edit: true,
             out: this.state.edit
         });
+        var permissions = this.props.permissions ? this.props.permissions : {};
 
         return (
             <div className={classes}>
@@ -89,9 +90,9 @@ class Header extends React.Component {
                         Home Control
                     </Link>
                     <div className="links">
-                        <Link to="/">Radio Pi</Link>
-                        <Link to="/wakeonlan">Wake on Lan</Link>
-                        { this.props.admin ? <Link to="/users">Users</Link> : ''}
+                        { permissions.radio >= 1 ? <Link to="/">Radio Pi</Link> : ''}
+                        { permissions.wakeonlan >= 1 ? <Link to="/wakeonlan">Wake on Lan</Link> : ''}
+                        { permissions.users >= 1 ? <Link to="/users">Users</Link> : ''}
                     </div>
                 </nav>
                 <nav className="horizontal">
@@ -116,7 +117,7 @@ class Header extends React.Component {
 }
 Header.propTypes = {
     documentTitle: React.PropTypes.string,
-    admin: React.PropTypes.bool
+    permissions: React.PropTypes.object
 };
 
 export default Header;

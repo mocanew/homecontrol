@@ -99,7 +99,7 @@ class App extends React.Component {
             this.setState({
                 id: e._id,
                 username: e.username,
-                permission: e.permissions
+                permissions: e.permissions
             });
         });
         socket.on('loginStatus', e => {
@@ -113,7 +113,7 @@ class App extends React.Component {
         var content = <main>{this.props.children}</main>;
         return (
             <div>
-                <Header ref="header" documentTitle={this.state.title} admin={this.state.admin} />
+                <Header ref="header" documentTitle={this.state.title} permissions={this.state.permissions} />
                 {this.state.loggedIn ? content : loginPage}
             </div>
         );
