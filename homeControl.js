@@ -215,7 +215,7 @@ var redirectsToServer = {
     },
     Radio: {
         read: ['Radio:start', 'Radio:stop', 'Radio:prev', 'Radio:next', 'Radio:toggle', 'Radio:volume', 'Radio:state:request'],
-        write: ['Radio:add', 'Radio:delete']
+        write: ['Radio:replaceStations']
     }
 };
 var passportSocketioMiddleware = passportSocketIo.authorize({

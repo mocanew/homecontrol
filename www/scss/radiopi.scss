@@ -16,6 +16,12 @@
     }
     &.noPadding {
         padding-bottom: 0;
+
+        .stations {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+        }
     }
 }
 
@@ -30,13 +36,39 @@
 }
 
 .editedStation {
-    &:first-of-type {
-        margin-top: 15px;
-    }
+    position: relative;
+    left: 0;
+    width: calc(100% - 60px);
+    max-width: 600px;
+    margin: 0 auto;
+
     .materialInput {
         display: inline-block;
         width: 50%;
         padding: 0 5px;
+        margin: 20px 0 5px;
+    }
+    .handle,
+    .remove {
+        position: absolute;
+        top: 50%;
+        width: 30px;
+        margin: -20px 0 0;
+        cursor: pointer;
+
+        .fa {
+            font-size: 22px;
+        }
+    }
+    .handle {
+        left: -30px;
+    }
+    .remove {
+        right: -30px;
+
+        .fa {
+            color: $red-500;
+        }
     }
 }
 .station {

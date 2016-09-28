@@ -123,18 +123,18 @@ function startup() {
     socket.on('Radio:stop', stopRadio);
     socket.on('Radio:volume', changeVolume);
     socket.on('Radio:toggle', toggleRadio);
-    socket.on('Radio:add', (e) => {
-        e = _.pick(e, ['name', 'url']);
-        if (!e.name || !e.url) return;
-
-        var station = new RadioModel(e);
-        station.save((err) => {
-            if (err) log.error('DB Save error:', err);
-            sendState();
+    socket.on('Radio:replaceStations', (newStations) => {
+        var removedStations = state.stations;
+        newStations.forEach((station) => {
+            var key = _.findKey(state.stations, (sta) => {
+                return sta._id == station._id;
+            });
+            if (key) {
+                removedStations.splice(key, 1);
+            }
+            updateStation(station);
         });
-    });
-    socket.on('Radio:delete', (e) => {
-        console.log('Remove from db', e);
+        removedStations.forEach((station) => removeStation(station));
     });
     socket.on('Radio:state:request', () => sendState(true));
     socket.on('requestState', () => sendState(true));
@@ -143,12 +143,36 @@ function startup() {
     sendState();
     log.info('Startup completed');
 }
+function updateStation(station) {
+    if (!station.name || !station.url) return;
+    station = _.pick(station, ['name', 'url', 'order', '_id']);
+
+    if (station._id && station._id.indexOf('station') != -1) {
+        station = _.omit(station, ['_id']);
+        new RadioModel(station).save();
+    }
+    else {
+        RadioModel.findOneAndUpdate({
+            _id: station._id
+        }, station, { upsert: true }, function (err) {
+            if (err) return log.error(err);
+        });
+    }
+}
+function removeStation(station, callback = () => { }) {
+    RadioModel.remove({
+        _id: station._id
+    }, (err) => {
+        if (err) log.error(err);
+        callback();
+    });
+}
 
 function sendState(sendStations) {
     if (sendStations !== false) sendStations = true;
-
     socket.emit('Radio:state', _.omit(state, ['stations']));
     if (sendStations) RadioModel.find((err, stations) => {
+        stations = _.sortBy(stations, 'order');
         state.stations = stations;
         socket.emit('Radio:stations', stations);
     });
@@ -188,11 +212,11 @@ function startRadio(station) {
 
     station = state.stations[index];
     url = station.url;
-
-    if (state.playing && index == state.lastPlayed) return;
+    console.log(state.lastPlayed, station.order);
+    if (state.playing && station.order == state.lastPlayed) return;
 
     state.expectedToStop = state.playing;
-    state.lastPlayed = index;
+    state.lastPlayed = station.order;
     if (player) {
         player.openFile(url);
         setTimeout(() => player.volume(state.volume));

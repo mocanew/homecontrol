@@ -54,6 +54,7 @@
     "sass-lint": "^1.7.0",
     "sass-loader": "^4.0.2",
     "script-loader": "^0.7.0",
+    "sortablejs": "^1.4.2",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
