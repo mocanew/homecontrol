@@ -99,7 +99,7 @@ api.get('/logout', function (req, res) {
 });
 
 api.get('/users', (req, res) => {
-    if (!_.isNumber(req.user.permissionLevel) || req.user.permissionLevel < config.permissions.admin) {
+    if (req.user.permissions.users < 1) {
         return res.status(403).send({
             success: false,
             message: 'Forbidden'

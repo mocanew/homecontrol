@@ -19,9 +19,6 @@ var exp = {
         filename: '[name].js',
         publicPath: '/assets/'
     },
-    amd: {
-        jQuery: true
-    },
     module: {
         preLoaders: [
             { test: /\.jsx?$/, exclude: /node_modules/, loader: 'eslint-loader' }
@@ -35,6 +32,7 @@ var exp = {
                     presets: ['es2015', 'react']
                 }
             },
+            { test: /\.json$/, loader: 'json-loader' },
             { test: /\.png$/, loader: 'url-loader?limit=10000&minetype=image/png' },
             { test: /\.jpg$/, loader: 'url-loader?limit=10000&minetype=image/jpg' },
             { test: /\.gif$/, loader: 'url-loader?limit=10000&minetype=image/gif' },
@@ -52,7 +50,14 @@ var exp = {
     postcss: function () {
         return [autoprefixer, precss];
     },
-    plugins: [],
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.DefinePlugin({
+            'process.env': {
+                browser: true
+            }
+        })
+    ],
     externals: {},
     resolve: {
         extensions: ['', '.js', '.jsx']
@@ -70,6 +75,7 @@ if (process.argv && process.argv.indexOf('--production') != -1) {
 }
 else {
     exp.entry.webpack = 'webpack-dev-server/client?http://0.0.0.0:8090';
+    exp.entry.webpackHot = 'webpack/hot/only-dev-server';
 }
 
 module.exports = exp;

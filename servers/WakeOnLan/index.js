@@ -12,7 +12,7 @@ const _ = require('lodash');
 const config = require('../../config.js');
 
 var io = require('socket.io-client');
-var socket = io.connect(config.masterSocket, {
+var socket = io.connect(config.socketURL, {
     reconnect: true,
     reconnectionDelayMax: 1000,
     query: 'secret=' + config.secret

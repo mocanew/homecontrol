@@ -6,6 +6,8 @@ function newSocket() {
 newSocket();
 import 'font-awesome/css/font-awesome.min.css';
 import 'css-reset-and-normalize/css/flavored-reset-and-normalize.css';
+import config from '../config.js';
+console.log(config);
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -16,6 +18,10 @@ import RadioPi from './routes/radiopi.jsx';
 import WakeOnLan from './routes/wakeonlan.jsx';
 import Users from './routes/users.jsx';
 import Login from './routes/login.jsx';
+
+import EventEmitter from 'eventemitter3';
+
+window.HomeControl = new EventEmitter();
 
 class App extends React.Component {
     constructor(props) {
@@ -93,7 +99,7 @@ class App extends React.Component {
             this.setState({
                 id: e._id,
                 username: e.username,
-                permission: e.permissions
+                permissions: e.permissions
             });
         });
         socket.on('loginStatus', e => {
@@ -107,7 +113,7 @@ class App extends React.Component {
         var content = <main>{this.props.children}</main>;
         return (
             <div>
-                <Header ref="header" documentTitle={this.state.title} admin={this.state.admin} />
+                <Header ref="header" documentTitle={this.state.title} permissions={this.state.permissions} />
                 {this.state.loggedIn ? content : loginPage}
             </div>
         );

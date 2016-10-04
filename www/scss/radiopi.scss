@@ -14,6 +14,15 @@
     &.titleShown {
         padding-bottom: 2 * $headerHeight + 40px;
     }
+    &.noPadding {
+        padding-bottom: 0;
+
+        .stations {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+        }
+    }
 }
 
 .loading {
@@ -26,6 +35,42 @@
     transform: translate(-50%, -50%);
 }
 
+.editedStation {
+    position: relative;
+    left: 0;
+    width: calc(100% - 60px);
+    max-width: 600px;
+    margin: 0 auto;
+
+    .materialInput {
+        display: inline-block;
+        width: 50%;
+        padding: 0 5px;
+        margin: 20px 0 5px;
+    }
+    .handle,
+    .remove {
+        position: absolute;
+        top: 50%;
+        width: 30px;
+        margin: -20px 0 0;
+        cursor: pointer;
+
+        .fa {
+            font-size: 22px;
+        }
+    }
+    .handle {
+        left: -30px;
+    }
+    .remove {
+        right: -30px;
+
+        .fa {
+            color: $red-500;
+        }
+    }
+}
 .station {
     display: block;
     width: 100%;
@@ -53,8 +98,16 @@
     height: 2 * $headerHeight;
     text-align: center;
     background: $main-600;
-    transition: left 0.5s, width 0.5s;
+    transition: bottom 0.3s, left 0.5s, width 0.5s;
 
+    &.out {
+        bottom: -2 * $headerHeight;
+
+        .radioTitle {
+            top: 0;
+            height: 0;
+        }
+    }
     .radioTitle {
         position: absolute;
         top: -40px;
