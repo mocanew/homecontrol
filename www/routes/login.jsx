@@ -1,5 +1,5 @@
 import React from 'react';
-import reqwest from 'reqwest';
+import axios from 'axios';
 // import classNames from 'classnames';
 import {Button, Input} from 'material-react';
 import '../scss/login.scss';
@@ -22,12 +22,7 @@ class Login extends React.Component {
             data[input.name.toLowerCase()] = input.value;
         });
 
-        reqwest({
-            url: '/api/login',
-            method: 'POST',
-            data: data,
-            type: 'json'
-        }, this.onLogin);
+        axios.post('/api/login', data).then(this.onLogin);
     }
     componentDidMount() {
         this.refs.form.addEventListener('submit', this.send);

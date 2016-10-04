@@ -1,5 +1,5 @@
 import React from 'react';
-import reqwest from 'reqwest';
+import axios from 'axios';
 import {Button, Input} from 'material-react';
 import '../scss/users.scss';
 
@@ -11,9 +11,9 @@ class UserPage extends React.Component {
         };
     }
     componentDidMount() {
-        reqwest('/api/users', (e) => {
+        axios.get('/api/users').then((e) => {
             this.setState({
-                users: e
+                users: e.data
             });
         });
     }
