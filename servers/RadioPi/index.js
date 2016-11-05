@@ -147,14 +147,14 @@ function updateStation(station) {
     if (!station.name || !station.url) return;
     station = _.pick(station, ['name', 'url', 'order', '_id']);
 
+    var temp = _.omit(station, ['_id']);
     if (station._id && station._id.indexOf('station') != -1) {
-        station = _.omit(station, ['_id']);
-        new RadioModel(station).save();
+        new RadioModel(temp).save();
     }
     else {
         RadioModel.findOneAndUpdate({
             _id: station._id
-        }, station, { upsert: true }, function (err) {
+        }, temp, { upsert: true }, function (err) {
             if (err) return log.error(err);
         });
     }
@@ -215,7 +215,6 @@ function startRadio(station) {
 
     station = state.stations[index];
     url = station.url;
-    console.log(state.lastPlayed, station.order);
     if (state.playing && station.order == state.lastPlayed) return;
 
     state.expectedToStop = state.playing;
