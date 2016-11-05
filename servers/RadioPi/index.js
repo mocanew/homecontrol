@@ -150,12 +150,14 @@ function updateStation(station) {
     var temp = _.omit(station, ['_id']);
     if (station._id && station._id.indexOf('station') != -1) {
         new RadioModel(temp).save();
+        sendState(true);
     }
     else {
         RadioModel.findOneAndUpdate({
             _id: station._id
         }, temp, { upsert: true }, function (err) {
             if (err) return log.error(err);
+            sendState(true);
         });
     }
 }
@@ -164,6 +166,7 @@ function removeStation(station, callback = () => { }) {
         _id: station._id
     }, (err) => {
         if (err) log.error(err);
+        sendState(true);
         callback();
     });
 }
