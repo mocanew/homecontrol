@@ -15,7 +15,8 @@ var RadioSchema = mongoose.Schema({
         required: true
     },
     order: {
-        type: Number
+        type: Number,
+        required: true
     }
 });
 var Radio = mongoose.model('RadioStation', RadioSchema);

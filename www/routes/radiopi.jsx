@@ -63,10 +63,10 @@ class RadioPi extends React.Component {
         if (!e) socket.emit('Radio:state:request');
     }
     save() {
-        console.log(_.clone(this.state.stations));
-        this.mantainOrder();
-        console.log(_.clone(this.state.stations));
-        socket.emit('Radio:replaceStations', this.state.stations);
+        if(this.state.stations[this.state.stations.length - 1].name.length < 1) this.state.stations.splice(this.state.stations.length - 1, 1);
+        this.mantainOrder(true, true, () => {
+            socket.emit('Radio:replaceStations', this.state.stations);
+        });
     }
     mantainOrder(sort = true, regenerateOrder, cb = () => { }) {
         var stations = this.state.stations;
@@ -89,7 +89,7 @@ class RadioPi extends React.Component {
             }, cb);
         }
         else {
-            this.forceUpdate();
+            this.forceUpdate(cb);
         }
     }
     componentDidMount() {
@@ -132,7 +132,7 @@ class RadioPi extends React.Component {
         var last = this.state.stations[this.state.stations.length - 1];
         if (_.isObject(station)) station[nameOrURL] = newValue;
 
-        if (last.name || last.url) {
+        if (!last || last.name || last.url) {
             this.addEmpty(this.state.stations);
             this.forceUpdate();
         }
@@ -192,7 +192,7 @@ class RadioPi extends React.Component {
             <div className={wrapperClasses}>
                 <div className="stations" ref={node => this.stationsNode = node}>
                     {
-                        stations.length ? stations : <div className="loading">Loading</div>
+                        stations ? stations : <div className="loading">Loading</div>
                     }
                 </div>
                 <div className={controlClasses}>

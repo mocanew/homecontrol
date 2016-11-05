@@ -173,6 +173,9 @@ function sendState(sendStations) {
     socket.emit('Radio:state', _.omit(state, ['stations']));
     if (sendStations) RadioModel.find((err, stations) => {
         stations = _.sortBy(stations, 'order');
+        _.each(stations, (station, key) => {
+            if (!_.isNumber(station.order)) station.order = key;
+        });
         state.stations = stations;
         socket.emit('Radio:stations', stations);
     });
