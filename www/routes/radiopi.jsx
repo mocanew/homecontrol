@@ -63,7 +63,7 @@ class RadioPi extends React.Component {
         if (!e) socket.emit('Radio:state:request');
     }
     save() {
-        if(this.state.stations[this.state.stations.length - 1].name.length < 1) this.state.stations.splice(this.state.stations.length - 1, 1);
+        if (this.state.stations[this.state.stations.length - 1].name.length < 1) this.state.stations.splice(this.state.stations.length - 1, 1);
         this.mantainOrder(true, true, () => {
             socket.emit('Radio:replaceStations', this.state.stations);
         });
