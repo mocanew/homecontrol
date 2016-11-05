@@ -30,15 +30,12 @@ class App extends React.Component {
         this.swipeRight = this.swipeRight.bind(this);
         this.login = this.login.bind(this);
         this.logout = this.logout.bind(this);
+        this.updateTitle = this.updateTitle.bind(this);
 
-        var title = props && props.children && props.children.type && props.children.type.name ? props.children.type.name : 'Home Control';
-        if (title == 'WakeOnLan') title = 'Wake on Lan';
-        if (title == 'UserPage') title = 'Users';
-        if (title == 'RadioPi') title = 'Radio';
         this.state = {
             loggedIn: false,
             menu: false,
-            title: title
+            title: 'Home Control'
         };
     }
     login(e) {
@@ -77,14 +74,17 @@ class App extends React.Component {
             menu: newState.menu
         });
     }
-    componentWillReceiveProps(nextProps) {
-        var title = nextProps.children.type.name;
-        if (title == 'WakeOnLan') title = 'Wake on Lan';
-        if (title == 'UserPage') title = 'Users';
-        if (title == 'RadioPi') title = 'Radio';
+    updateTitle(props) {
+        var title = props.location.pathname.substr(1).toLowerCase();
+        if (title == 'wakeonlan') title = 'Wake on Lan';
+        if (title == 'users') title = 'Users';
+        if (title == 'radiopi' || title == '') title = 'Radio';
         this.setState({
             title: title
         });
+    }
+    componentWillReceiveProps(nextProps) {
+        this.updateTitle(nextProps);
     }
     componentDidMount() {
         this.hammer = new Hammer(document.getElementById('root'), {});
@@ -107,6 +107,7 @@ class App extends React.Component {
             e ? this.login({ success: true }) : this.logout();
         });
         socket.emit('user');
+        this.updateTitle(this.props);
     }
     render() {
         document.title = this.state.title + ' - Home Control';
