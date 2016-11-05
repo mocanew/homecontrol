@@ -168,7 +168,7 @@ class RadioPi extends React.Component {
                     active: this.state.lastPlayed == e.order,
                     faded: !this.state.playing && this.state.lastPlayed == e.order
                 });
-                return <div className={classes} onClick={this.stationClick.bind(this, e) } key={e._id} >{e.name}</div>;
+                return <div className={classes} onClick={this.stationClick.bind(this, e) } key={e._id} >{e.order + '. ' + e.name}</div>;
             });
         }
         var toggleClasses = classnames({
