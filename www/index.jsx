@@ -39,7 +39,6 @@ class App extends React.Component {
         };
     }
     login(e) {
-        e = e.data;
         if (!e || !e.success) return;
 
         newSocket();
