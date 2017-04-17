@@ -39,6 +39,7 @@ class App extends React.Component {
         };
     }
     login(e) {
+        e = e.data;
         if (!e || !e.success) return;
 
         newSocket();
@@ -103,7 +104,7 @@ class App extends React.Component {
             });
         });
         socket.on('loginStatus', e => {
-            e ? this.login({ success: true }) : this.logout();
+            e ? this.login({data: { success: true }}) : this.logout();
         });
         socket.emit('user');
         this.updateTitle(this.props);
